@@ -1,8 +1,8 @@
-package aor.paj.proj3_vc_re_jc.dto;
+package paj.project4vc.dto;
 
 
 
-import aor.paj.proj3_vc_re_jc.enums.UserRole;
+import paj.project4vc.enums.UserRole;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -28,7 +28,7 @@ public class UserDto {
     @XmlElement
     private String phone;
     @XmlElement
-    private String photoURL;
+    private String photo;
     @XmlElement
     private String token;
     @XmlElement
@@ -39,14 +39,14 @@ public class UserDto {
     public UserDto() {
     }
 
-    public UserDto(String username, String password, String email, String firstName, String lastName, String phone, String photoURL, UserRole role, boolean deleted) {
+    public UserDto(String username, String password, String email, String firstName, String lastName, String phone, String photo, UserRole role, boolean deleted) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
-        this.photoURL = photoURL;
+        this.photo = photo;
         this.role = role;
         this.deleted = deleted;
     }
@@ -107,12 +107,12 @@ public class UserDto {
         this.phone = phone;
     }
 
-    public String getPhotoURL() {
-        return photoURL;
+    public String getPhoto() {
+        return photo;
     }
 
     public void setPhotoURL(String photoURL) {
-        this.photoURL = photoURL;
+        this.photo = photo;
     }
 
     public String getToken() {

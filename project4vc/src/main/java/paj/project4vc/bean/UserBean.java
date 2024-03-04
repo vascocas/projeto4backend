@@ -1,12 +1,12 @@
-package aor.paj.proj3_vc_re_jc.bean;
+package paj.project4vc.bean;
 
-import aor.paj.proj3_vc_re_jc.dao.TokenDao;
-import aor.paj.proj3_vc_re_jc.dao.UserDao;
-import aor.paj.proj3_vc_re_jc.dto.*;
-import aor.paj.proj3_vc_re_jc.entity.TaskEntity;
-import aor.paj.proj3_vc_re_jc.entity.TokenEntity;
-import aor.paj.proj3_vc_re_jc.entity.UserEntity;
-import aor.paj.proj3_vc_re_jc.enums.UserRole;
+import paj.project4vc.dao.TokenDao;
+import paj.project4vc.dao.UserDao;
+import paj.project4vc.dto.*;
+import paj.project4vc.entity.TaskEntity;
+import paj.project4vc.entity.TokenEntity;
+import paj.project4vc.entity.UserEntity;
+import paj.project4vc.enums.UserRole;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.ws.rs.core.Response;
@@ -36,6 +36,8 @@ public class UserBean implements Serializable {
 
     int tokenTimer = 10000000;
 
+
+    /*
     public String login(String username, String password) {
         UserEntity userEntity = userDao.findUserByUsername(username);
         if (userEntity != null && !userEntity.isDeleted()) {
@@ -52,6 +54,8 @@ public class UserBean implements Serializable {
         }
         return null;
     }
+
+
 
     public boolean register(UserDto user) {
         UserEntity u = userDao.findUserByUsername(user.getUsername());
@@ -70,7 +74,7 @@ public class UserBean implements Serializable {
         userEntity.setFirstName(user.getFirstName());
         userEntity.setLastName(user.getLastName());
         userEntity.setPhone(user.getPhone());
-        userEntity.setPhotoURL(user.getPhotoURL());
+        userEntity.setPhoto(user.getPhoto());
         userEntity.setTokenId(user.getToken());
         userEntity.setDeleted(user.isDeleted());
         userEntity.setRole(user.getRole());
@@ -85,7 +89,7 @@ public class UserBean implements Serializable {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setPhone(user.getPhone());
-        userDto.setPhotoURL(user.getPhotoURL());
+        userDto.setPhotoURL(user.getPhoto());
         userDto.setToken(user.getTokenId());
         userDto.setDeleted(user.isDeleted());
         userDto.setRole(user.getRole());
@@ -94,8 +98,8 @@ public class UserBean implements Serializable {
     }
 
     private String generateNewToken() {
-        SecureRandom secureRandom = new SecureRandom(); //threadsafe
-        Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
+        SecureRandom secureRandom = new SecureRandom();
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder();
         byte[] randomBytes = new byte[24];
         secureRandom.nextBytes(randomBytes);
         return base64Encoder.encodeToString(randomBytes);
@@ -105,13 +109,11 @@ public class UserBean implements Serializable {
         UserEntity u = userDao.findUserByToken(token);
         TokenEntity t = tokenDao.findTokenById(token);
         if (u != null) {
-            u.setTokenId(null);
+            //u.setTokenId(null);
             t.setDeleted(true);
-            //  tokenDao.remove(t);
+            tokenDao.remove(t);
             return true;
         }
-        System.out.println("HERE");
-        System.out.println(token);
         return false;
     }
 
@@ -125,11 +127,11 @@ public class UserBean implements Serializable {
         }
     }
 
-    public void updateProfile(EditDto user, String token) {
+    public void updateProfile(UserDto user, String token) {
         UserEntity u = userDao.findUserByToken(token);
         TokenEntity t = tokenDao.findTokenById(token);
         if (u != null) {
-            u.setPhotoURL(user.getPhotoURL());
+            u.setPhoto(user.getPhoto());
             u.setPhone(user.getPhone());
             u.setPassword(user.getPassword());
             u.setLastName(user.getLastName());
@@ -141,7 +143,7 @@ public class UserBean implements Serializable {
         }
     }
 
-    public void updateRole(RoleDto user, String token) {
+    public void updateRole(LoginDto user, String token) {
         UserEntity u = userDao.findUserByUsername(user.getUsername());
         TokenEntity t = tokenDao.findTokenById(token);
         if (u != null) {
@@ -151,9 +153,9 @@ public class UserBean implements Serializable {
         }
     }
 
-    public RoleDto getRole (String token) {
+    public LoginDto getRole (String token) {
         UserEntity u = userDao.findUserByToken(token);
-        RoleDto dto = new RoleDto();
+        LoginDto dto = new LoginDto();
         if (u!=null) {
             dto.setRole(u.getRole());
             return dto;
@@ -181,17 +183,17 @@ public class UserBean implements Serializable {
         return false;
     }
 
-    public CheckProfileDto checkProfile(String username, String token) {
+    public UserDto checkProfile(String username, String token) {
         UserEntity u = userDao.findUserByUsername(username);
         TokenEntity t = tokenDao.findTokenById(token);
-        CheckProfileDto checkU = new CheckProfileDto();
+        UserDto checkU = new UserDto();
         checkU.setUsername(u.getUsername());
         checkU.setFirstName(u.getFirstName());
         checkU.setLastName(u.getLastName());
         checkU.setEmail(u.getEmail());
         checkU.setPhone(u.getPhone());
-        checkU.setRole(u.getRole().getValue());
-        checkU.setPhotoURL(u.getPhotoURL());
+        checkU.setRole(u.getRole());
+        checkU.setPhotoURL(u.getPhoto());
         t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
         return checkU;
     }
@@ -208,7 +210,7 @@ public class UserBean implements Serializable {
            newU.setFirstName(user.getFirstName());
            newU.setLastName(user.getLastName());
            newU.setPassword(user.getPassword());
-           newU.setPhotoURL(user.getPhotoURL());
+           newU.setPhoto(user.getPhoto());
            newU.setRole(user.getRole());
            newU.setEmail(user.getEmail());
             userDao.persist(newU);
@@ -219,21 +221,21 @@ public class UserBean implements Serializable {
     }
     }
 
-    public ArrayList<CheckProfileDto> checkAll(String token) {
+    public ArrayList<UserDto> checkAll(String token) {
         TokenEntity t = tokenDao.findTokenById(token);
         ArrayList<UserEntity> userList = userDao.allUsers();
 
-        ArrayList<CheckProfileDto> dtos = new ArrayList<>();
+        ArrayList<UserDto> dtos = new ArrayList<>();
 
         for (UserEntity u : userList) {
-            CheckProfileDto checkU = new CheckProfileDto();
+            UserDto checkU = new UserDto();
             checkU.setUsername(u.getUsername());
             checkU.setFirstName(u.getFirstName());
             checkU.setLastName(u.getLastName());
             checkU.setEmail(u.getEmail());
             checkU.setPhone(u.getPhone());
-            checkU.setRole(u.getRole().getValue());
-            checkU.setPhotoURL(u.getPhotoURL());
+            checkU.setRole(u.getRole());
+            checkU.setPhotoURL(u.getPhoto());
             checkU.setDeleted(u.isDeleted());
             checkU.setId(u.getId());
             dtos.add(checkU);
@@ -252,15 +254,15 @@ public class UserBean implements Serializable {
         }
     }
 
-    public CheckProfileDto userById (int id, String token) {
+    public UserDto userById (int id, String token) {
         TokenEntity t = tokenDao.findTokenById(token);
         UserEntity u = userDao.findUserById(id);
-        CheckProfileDto dto = new CheckProfileDto();
+        UserDto dto = new UserDto();
         if (u != null) {
             dto.setUsername(u.getUsername());
             dto.setEmail(u.getEmail());
             dto.setPhone(u.getPhone());
-            dto.setRole(u.getRole().getValue());
+            dto.setRole(u.getRole());
             dto.setEmail(u.getEmail());
             dto.setLastName(u.getLastName());
             dto.setFirstName(u.getFirstName());
@@ -269,7 +271,7 @@ public class UserBean implements Serializable {
         return dto;
     }
 
-    public void updateOtherProfile (String token, EditOtherDto dto) {
+    public void updateOtherProfile (String token, UserDto dto) {
         TokenEntity t = tokenDao.findTokenById(token);
         UserEntity u = userDao.findUserByUsername(dto.getUsername());
         if (u!=null) {
@@ -310,4 +312,6 @@ public class UserBean implements Serializable {
         shortDto.setPassword(user.getPassword());
         return shortDto;
     }
+
+     */
 }

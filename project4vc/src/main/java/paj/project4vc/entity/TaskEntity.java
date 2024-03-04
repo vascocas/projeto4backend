@@ -1,9 +1,8 @@
-package aor.paj.proj3_vc_re_jc.entity;
+package paj.project4vc.entity;
 
-import aor.paj.proj3_vc_re_jc.enums.TaskPriority;
-import aor.paj.proj3_vc_re_jc.enums.TaskState;
+import paj.project4vc.enums.TaskPriority;
+import paj.project4vc.enums.TaskState;
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 
 @Entity
@@ -23,25 +22,25 @@ public class TaskEntity implements Serializable {
     @Column(name = "id", nullable = false, unique = true, updatable = false)
     private int id;
 
-    @Column(name = "title", nullable = false, unique = false, length = 25)
+    @Column(name = "title", nullable = false, length = 25)
     private String title;
 
-    @Column(name = "description", nullable = false, unique = false, length = 65535, columnDefinition = "TEXT")
+    @Column(name = "description", nullable = false, length = 65500, columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "start_date", nullable = false, unique = false, updatable = true)
+    @Column(name = "start_date", nullable = false)
     private String startDate;
 
-    @Column(name = "end_date", nullable = true, unique = false, updatable = true)
+    @Column(name = "end_date", nullable = false)
     private String endDate;
 
-    @Column(name = "state", nullable = false, unique = false, updatable = true)
+    @Column(name = "state", nullable = false)
     private int state;
 
-    @Column(name = "priority", nullable = false, unique = false, updatable = true)
+    @Column(name = "priority", nullable = false)
     private int priority;
 
-    @Column(name = "deleted", nullable = false, unique = false, updatable = true)
+    @Column(name = "deleted", nullable = false)
     private boolean deleted;
 
     //Owning Side User - Task

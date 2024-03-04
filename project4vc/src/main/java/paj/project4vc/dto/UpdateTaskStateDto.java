@@ -1,6 +1,6 @@
-package aor.paj.proj3_vc_re_jc.dto;
+package paj.project4vc.dto;
 
-import aor.paj.proj3_vc_re_jc.enums.TaskState;
+import paj.project4vc.enums.TaskState;
 import jakarta.xml.bind.annotation.XmlElement;
 
 public class UpdateTaskStateDto {

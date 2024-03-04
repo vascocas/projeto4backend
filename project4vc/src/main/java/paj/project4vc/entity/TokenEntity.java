@@ -1,9 +1,7 @@
-package aor.paj.proj3_vc_re_jc.entity;
+package paj.project4vc.entity;
 
 import jakarta.persistence.*;
 
-import java.io.Serializable;
-import java.time.Instant;
 
 @Entity
 @Table(name = "token")
@@ -13,43 +11,55 @@ public class TokenEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "id", nullable = true, unique = true, updatable = true)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int tokenId;
 
-    @Column(name = "token_expiration", nullable = true, unique = false, updatable = true)
+    @Column(name = "token_value", unique = true)
+    private String tokenValue;
+
+    @Column(name = "token_expiration")
     private Instant tokenExpiration;
 
-    @Column(name = "deleted", nullable = false, unique = false, updatable = true)
-    private boolean deleted;
-
-    /*@OneToOne(mappedBy = "token", cascade = CascadeType.ALL)
-    private UserEntity user;*/
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
     public TokenEntity() {
     }
 
-    public String getId() {
-        return id;
+    public int getTokenId() {
+        return tokenId;
+    }
+
+    public void setTokenId(int tokenId) {
+        this.tokenId = tokenId;
+    }
+
+    public java.lang.String getTokenValue() {
+        return tokenValue;
+    }
+
+    public void setTokenValue(java.lang.String tokenValue) {
+        this.tokenValue = tokenValue;
     }
 
     public Instant getTokenExpiration() {
         return tokenExpiration;
     }
 
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public void setTokenExpiration(Instant tokenExpiration) {
         this.tokenExpiration = tokenExpiration;
     }
 
-    public boolean isDeleted() {
-        return deleted;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
+
+    // public boolean isValid() {
+    //            return tokenValue != null && tokenExpiration != null && tokenExpiration.isAfter(Instant.now());
+    //        }
 }

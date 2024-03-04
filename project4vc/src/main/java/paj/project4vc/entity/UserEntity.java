@@ -1,19 +1,17 @@
-package aor.paj.proj3_vc_re_jc.entity;
+package paj.project4vc.entity;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
-import java.util.Set;
-import aor.paj.proj3_vc_re_jc.enums.UserRole;
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import paj.project4vc.enums.UserRole;
 
 @Entity
 @Table(name = "user")
 @NamedQuery(name = "User.findUserByUsername", query = "SELECT u FROM UserEntity u WHERE u.username = :username")
-@NamedQuery(name = "User.findUserByEmail", query = "SELECT u FROM UserEntity u WHERE u.email = :email")
-@NamedQuery(name = "User.findUserByToken", query = "SELECT DISTINCT u FROM UserEntity u WHERE u.tokenId = :token")
+@NamedQuery(name = "User.findUserByToken", query = "SELECT u FROM UserEntity u WHERE u.tokens = :token")
+@NamedQuery(name = "User.findUserById", query = "SELECT u FROM UserEntity u WHERE u.id = :id")
 @NamedQuery(name = "User.findAllUsers", query = "SELECT u FROM UserEntity u")
-@NamedQuery(name ="User.findUserById", query = "SELECT u FROM UserEntity u WHERE u.id = :id")
+
 public class UserEntity implements Serializable{
 
     private static final long serialVersionUID = 1L;
@@ -23,42 +21,50 @@ public class UserEntity implements Serializable{
     @Column(name = "id", nullable = false, unique = true, updatable = false)
     private int id;
 
-    @Column(name="email", nullable=false, unique = true, updatable = true)
+    @Column(name="email", nullable=false, unique = true)
     private String email;
 
-    @Column(name = "first_name", nullable = false, unique = false, updatable = true)
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, unique = false, updatable = true)
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "phone", nullable = false, unique = false, updatable = true)
+    @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "profile_photo", nullable = false, unique = false, updatable = true)
-    private String photoURL;
+    @Column(name = "profile_photo", nullable = false)
+    private String photo;
 
-    @Column(name = "password", nullable = false, unique = false, updatable = true)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "username", nullable = false, unique = true, updatable = false)
     private String username;
 
-    @Column(name="deleted", nullable = false, unique = false, updatable = true)
+    @Column(name="deleted", nullable = false)
     private boolean deleted;
 
-    @Column(name = "role", nullable = false, unique = false, updatable = true)
+    @Column(name = "role", nullable = false)
     private int role;
 
-    @Column(name = "token_id", nullable = true, unique = true, updatable = true)
-    private String tokenId;
+    @OneToMany
+    @JoinColumn(name = "user_id") // Define the foreign key column
+    private ArrayList<TokenEntity> tokens; //
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.PERSIST)
-    private Set<TaskEntity> tasks;
-
+    @OneToMany(mappedBy = "creator")
+    private ArrayList<TaskEntity> tasks;
 
     //default empty constructor
     public UserEntity() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -68,33 +74,42 @@ public class UserEntity implements Serializable{
     public void setEmail(String email) {
         this.email = email;
     }
-
-    public UserRole getRole() {
-        return UserRole.valueOf(this.role);
+    public String getFirstName() {
+        return firstName;
     }
 
-    public  int getRoleInt() {
-        return role;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public void setRole(UserRole role) {
-        this.role = role.getValue();
+    public String getLastName() {
+        return lastName;
     }
 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Set<TaskEntity> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(Set<TaskEntity> tasks) {
-        this.tasks = tasks;
     }
 
     public String getUsername() {
@@ -105,58 +120,32 @@ public class UserEntity implements Serializable{
         this.username = username;
     }
 
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getPhotoURL() {
-        return photoURL;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setPhone(String phoneNumber) {
-        this.phone = phoneNumber;
-    }
-
-    public void setPhotoURL(String profilePhoto) {
-        this.photoURL = profilePhoto;
-    }
-
     public boolean isDeleted() {
         return deleted;
     }
-
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
 
-    public String getTokenId() {
-        return tokenId;
+    public ArrayList<TokenEntity> getTokens() {
+        return tokens;
+    }
+    public void setTokens(ArrayList<TokenEntity> tokens) {
+        this.tokens = tokens;
+    }
+    public ArrayList<TaskEntity> getTasks() {
+        return tasks;
     }
 
-    public void setTokenId(String tokenId) {
-        this.tokenId = tokenId;
+    public void setTasks(ArrayList<TaskEntity> tasks) {
+        this.tasks = tasks;
     }
 
+    public UserRole getRole() {
+        return UserRole.valueOf(this.role);
+    }
 
+    public void setRole(UserRole role) {
+        this.role = role.getValue();
+    }
 }

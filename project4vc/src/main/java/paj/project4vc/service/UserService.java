@@ -1,8 +1,8 @@
-package aor.paj.proj3_vc_re_jc.service;
+package paj.project4vc.service;
 
-import aor.paj.proj3_vc_re_jc.bean.TaskBean;
-import aor.paj.proj3_vc_re_jc.bean.UserBean;
-import aor.paj.proj3_vc_re_jc.dto.*;
+import paj.project4vc.bean.TaskBean;
+import paj.project4vc.bean.UserBean;
+import paj.project4vc.dto.*;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -68,7 +68,7 @@ public class UserService {
     @Path("/editProfile")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response editProfile(EditDto user, @HeaderParam("token") String token) {
+    public Response editProfile(UserDto user, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
             userBean.updateProfile(user, token);
             return Response.status(200).entity("Profile updated!").build();
@@ -84,7 +84,7 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response checkProfile(@HeaderParam("username") String username, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
-            CheckProfileDto u = userBean.checkProfile(username, token);
+            UserDto u = userBean.checkProfile(username, token);
             return Response.status(200).entity(u).build();
         } else {
             userBean.logout(token);
@@ -98,7 +98,7 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response roleByToken (@HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
-            RoleDto rdto = userBean.getRole(token);
+            LoginDto rdto = userBean.getRole(token);
             return Response.status(200).entity(rdto).build();
         } else {
             userBean.logout(token);
@@ -111,7 +111,7 @@ public class UserService {
     @Path("/editOtherProfile")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response editOtherProfile (@HeaderParam("token") String token, EditOtherDto user) {
+    public Response editOtherProfile (@HeaderParam("token") String token, UserDto user) {
         if (userBean.tokenExist(token)) {
             userBean.updateOtherProfile(token,user);
             return Response.status(200).entity("Profile updated!").build();
@@ -143,7 +143,7 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response checkUsers(@HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
-            ArrayList<CheckProfileDto> dtos = userBean.checkAll(token);
+            ArrayList<UserDto> dtos = userBean.checkAll(token);
             return Response.status(200).entity(dtos).build();
         } else {
             userBean.logout(token);
@@ -167,7 +167,7 @@ public class UserService {
     @PUT
     @Path("/updateRole")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateRole(RoleDto user, @HeaderParam("token") String token) {
+    public Response updateRole(LoginDto user, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
             userBean.updateRole(user, token);
             return Response.status(200).entity("Role updated").build();
@@ -183,7 +183,7 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response userById (@HeaderParam("id") Integer id, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)){
-            CheckProfileDto dto = userBean.userById(id,token);
+            UserDto dto = userBean.userById(id,token);
             return Response.status(200).entity(dto).build();
         }else {
             userBean.logout(token);

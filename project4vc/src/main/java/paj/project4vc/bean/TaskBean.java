@@ -1,14 +1,14 @@
-package aor.paj.proj3_vc_re_jc.bean;
+package paj.project4vc.bean;
 
-import aor.paj.proj3_vc_re_jc.dao.CategoryDao;
-import aor.paj.proj3_vc_re_jc.dao.TaskDao;
-import aor.paj.proj3_vc_re_jc.dao.UserDao;
-import aor.paj.proj3_vc_re_jc.dto.TaskDto;
-import aor.paj.proj3_vc_re_jc.entity.CategoryEntity;
-import aor.paj.proj3_vc_re_jc.entity.TaskEntity;
-import aor.paj.proj3_vc_re_jc.entity.UserEntity;
-import aor.paj.proj3_vc_re_jc.enums.TaskState;
-import aor.paj.proj3_vc_re_jc.enums.UserRole;
+import paj.project4vc.dao.CategoryDao;
+import paj.project4vc.dao.TaskDao;
+import paj.project4vc.dao.UserDao;
+import paj.project4vc.dto.TaskDto;
+import paj.project4vc.entity.CategoryEntity;
+import paj.project4vc.entity.TaskEntity;
+import paj.project4vc.entity.UserEntity;
+import paj.project4vc.enums.TaskState;
+import paj.project4vc.enums.UserRole;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.ws.rs.core.Response;
@@ -56,6 +56,29 @@ public class TaskBean implements Serializable {
         }
         return false;
     }
+
+    // Exception example
+    /*
+    public void withdraw(double amount) throws InsufficientFundsException {
+        if(amount <= balance) {
+            balance -= amount;
+        }else {
+            double needs = amount - balance;
+            throw new InsufficientFundsException(needs);
+        }
+    }
+
+     try {
+        System.out.println("\nWithdrawing $100...");
+        c.withdraw(100.00);
+        System.out.println("\nWithdrawing $600...");
+        c.withdraw(600.00);
+    } catch (InsufficientFundsException e) {
+        System.out.println("Sorry, but you are short $" + e.getAmount());
+        e.printStackTrace();
+    }
+
+     */
 
     public Response removeTask(String token, int id) {
         // Get user role by token

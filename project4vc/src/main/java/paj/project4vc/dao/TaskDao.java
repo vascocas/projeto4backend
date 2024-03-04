@@ -1,8 +1,8 @@
-package aor.paj.proj3_vc_re_jc.dao;
+package paj.project4vc.dao;
 
 
-import aor.paj.proj3_vc_re_jc.entity.TaskEntity;
-import aor.paj.proj3_vc_re_jc.entity.UserEntity;
+import paj.project4vc.entity.TaskEntity;
+import paj.project4vc.entity.UserEntity;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.NoResultException;

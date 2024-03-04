@@ -1,9 +1,9 @@
-package aor.paj.proj3_vc_re_jc.entity;
+package paj.project4vc.entity;
 
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "task_category")
@@ -24,7 +24,7 @@ public class CategoryEntity implements Serializable {
     private String categoryName;
 
     @OneToMany(mappedBy = "category")
-    private Set<TaskEntity> tasks;
+    private ArrayList<TaskEntity> tasks;
 
     public CategoryEntity() {
     }
@@ -45,11 +45,11 @@ public class CategoryEntity implements Serializable {
         this.categoryName = categoryName;
     }
 
-    public Set<TaskEntity> getTasks() {
+    public ArrayList<TaskEntity> getTasks() {
         return tasks;
     }
 
-    public void setTasks(Set<TaskEntity> tasks) {
+    public void setTasks(ArrayList<TaskEntity> tasks) {
         this.tasks = tasks;
     }
 }

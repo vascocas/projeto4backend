@@ -1,14 +1,14 @@
-package aor.paj.proj3_vc_re_jc.service;
+package paj.project4vc.service;
 
-import aor.paj.proj3_vc_re_jc.bean.CategoryBean;
-import aor.paj.proj3_vc_re_jc.bean.TaskBean;
-import aor.paj.proj3_vc_re_jc.bean.UserBean;
-import aor.paj.proj3_vc_re_jc.dao.CategoryDao;
-import aor.paj.proj3_vc_re_jc.dto.*;
-import aor.paj.proj3_vc_re_jc.entity.CategoryEntity;
-import aor.paj.proj3_vc_re_jc.enums.TaskPriority;
-import aor.paj.proj3_vc_re_jc.enums.TaskState;
-import aor.paj.proj3_vc_re_jc.enums.UserRole;
+import paj.project4vc.bean.CategoryBean;
+import paj.project4vc.bean.TaskBean;
+import paj.project4vc.bean.UserBean;
+import paj.project4vc.dao.CategoryDao;
+import paj.project4vc.dto.*;
+import paj.project4vc.entity.CategoryEntity;
+import paj.project4vc.enums.TaskPriority;
+import paj.project4vc.enums.TaskState;
+import paj.project4vc.enums.UserRole;
 import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;

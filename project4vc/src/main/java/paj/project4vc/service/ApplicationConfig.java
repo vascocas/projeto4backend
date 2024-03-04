@@ -1,4 +1,4 @@
-package aor.paj.proj3_vc_re_jc.service;
+package paj.project4vc.service;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;

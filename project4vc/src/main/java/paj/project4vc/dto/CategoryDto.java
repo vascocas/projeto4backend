@@ -1,4 +1,4 @@
-package aor.paj.proj3_vc_re_jc.dto;
+package paj.project4vc.dto;
 
 import jakarta.xml.bind.annotation.XmlElement;
 

@@ -1,4 +1,4 @@
-package aor.paj.proj3_vc_re_jc.enums;
+package paj.project4vc.enums;
 
 public enum TaskPriority {
 
