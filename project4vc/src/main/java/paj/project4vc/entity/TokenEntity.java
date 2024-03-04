@@ -2,11 +2,13 @@ package paj.project4vc.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+import java.time.Instant;
+
 
 @Entity
 @Table(name = "token")
-@NamedQuery(name = "Token.findTokenById", query = "SELECT DISTINCT u FROM TokenEntity u WHERE u.id = :token")
-
+@NamedQuery(name = "Token.findTokenByValue", query = "SELECT t FROM TokenEntity t WHERE t.tokenValue = :tokenValue")
 public class TokenEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -35,11 +37,11 @@ public class TokenEntity implements Serializable {
         this.tokenId = tokenId;
     }
 
-    public java.lang.String getTokenValue() {
+    public String getTokenValue() {
         return tokenValue;
     }
 
-    public void setTokenValue(java.lang.String tokenValue) {
+    public void setTokenValue(String tokenValue) {
         this.tokenValue = tokenValue;
     }
 
@@ -58,8 +60,4 @@ public class TokenEntity implements Serializable {
     public void setUser(UserEntity user) {
         this.user = user;
     }
-
-    // public boolean isValid() {
-    //            return tokenValue != null && tokenExpiration != null && tokenExpiration.isAfter(Instant.now());
-    //        }
 }

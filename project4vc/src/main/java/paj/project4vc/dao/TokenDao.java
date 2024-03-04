@@ -13,11 +13,14 @@ public class TokenDao extends AbstractDao<TokenEntity> {
         super(TokenEntity.class);
     }
 
-    public TokenEntity findTokenById(String id) {
+    public TokenEntity findTokenByValue(String tokenValue) {
         try {
-            return (TokenEntity) em.createNamedQuery("Token.findTokenById").setParameter("token", id).getSingleResult();
+            return (TokenEntity) em.createNamedQuery("Token.findTokenByValue")
+                    .setParameter("tokenValue", tokenValue)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
     }
+
 }

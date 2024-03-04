@@ -8,7 +8,6 @@ import paj.project4vc.dto.*;
 import paj.project4vc.entity.CategoryEntity;
 import paj.project4vc.enums.TaskPriority;
 import paj.project4vc.enums.TaskState;
-import paj.project4vc.enums.UserRole;
 import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -17,7 +16,6 @@ import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 
 @Path("/tasks")
 public class TaskService {
@@ -201,7 +199,7 @@ public class TaskService {
     @Path("/status")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateTaskStatus(@HeaderParam("token") String token, @HeaderParam("taskId") int taskId,
-                                     UpdateTaskStateDto newStatus) {
+                                     TaskStateDto newStatus) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }

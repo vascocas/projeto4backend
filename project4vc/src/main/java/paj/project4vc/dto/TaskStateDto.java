@@ -3,7 +3,7 @@ package paj.project4vc.dto;
 import paj.project4vc.enums.TaskState;
 import jakarta.xml.bind.annotation.XmlElement;
 
-public class UpdateTaskStateDto {
+public class TaskStateDto {
 
     private static final long serialVersionUID = 1L;
 
@@ -12,10 +12,10 @@ public class UpdateTaskStateDto {
     @XmlElement
     private TaskState state;
 
-    public UpdateTaskStateDto() {
+    public TaskStateDto() {
     }
 
-    public UpdateTaskStateDto(int id, TaskState state) {
+    public TaskStateDto(int id, TaskState state) {
         this.id = id;
         this.state = state;
     }

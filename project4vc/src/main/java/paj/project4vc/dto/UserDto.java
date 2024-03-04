@@ -111,7 +111,7 @@ public class UserDto {
         return photo;
     }
 
-    public void setPhotoURL(String photoURL) {
+    public void setPhoto(String photoURL) {
         this.photo = photo;
     }
 
