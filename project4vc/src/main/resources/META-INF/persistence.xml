@@ -4,13 +4,14 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
 https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
-    <persistence-unit name="PersistenceUnit">
-        <jta-data-source>java:/MyDS</jta-data-source>
-        <properties>
-            <property name="hibernate.hbm2ddl.auto" value="create" />
-            <property name="hibernate.show_sql" value="false" />
-            <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.cache.use_second_level_cache" value="false"/>
-        </properties>
-    </persistence-unit>
+<persistence-unit name="PersistenceUnit">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <jta-data-source>java:/MySqlDSproj4</jta-data-source>
+    <properties>
+        <property name="hibernate.hbm2ddl.auto" value="create" />
+        <property name="hibernate.show_sql" value="false" />
+        <property name="hibernate.format_sql" value="true"/>
+        <property name="hibernate.cache.use_second_level_cache" value="false"/>
+    </properties>
+</persistence-unit>
 </persistence>
