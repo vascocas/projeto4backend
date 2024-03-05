@@ -208,12 +208,16 @@ public class UserService {
     }
 
     @PUT
-    @Path("/delete")
+    @Path("/delete/{username}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteUser(@HeaderParam("username") String username, @HeaderParam("token") String token) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteUser(@HeaderParam("token") String token, @PathParam("username") String username) {
         if (userBean.tokenExist(token)) {
-            userBean.deleteUser(username, token);
-            return Response.status(200).entity("Profile 'deleted'").build();
+            if (userBean.deleteUser(username, token)) {
+                return Response.status(200).entity("Profile deleted").build();
+            } else {
+                return Response.status(401).entity("Error").build();
+            }
         } else {
             userBean.logout(token);
             return Response.status(401).entity("Invalid Token!").build();
@@ -225,8 +229,28 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateRole(LoginDto user, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
-            userBean.updateRole(user, token);
-            return Response.status(200).entity("Role updated").build();
+            if(userBean.updateRole(user, token)) {
+                return Response.status(200).entity("Role updated").build();
+            }
+            else{
+                return Response.status(401).entity("Error").build();
+            }
+        } else {
+            userBean.logout(token);
+            return Response.status(401).entity("Invalid Token!").build();
+        }
+    }
+
+    @DELETE
+    @Path("/{username}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response removeUser(@HeaderParam("token") String token, @PathParam("username") String username) {
+        if (userBean.tokenExist(token)) {
+            if (userBean.removeUser(username, token)) {
+                return Response.status(200).entity("Profile removed").build();
+            } else {
+                return Response.status(401).entity("Error").build();
+            }
         } else {
             userBean.logout(token);
             return Response.status(401).entity("Invalid Token!").build();

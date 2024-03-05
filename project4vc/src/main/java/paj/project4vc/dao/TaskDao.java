@@ -1,6 +1,5 @@
 package paj.project4vc.dao;
 
-
 import paj.project4vc.entity.TaskEntity;
 import paj.project4vc.entity.UserEntity;
 import jakarta.ejb.EJB;
