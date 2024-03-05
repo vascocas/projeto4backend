@@ -1,18 +1,22 @@
 package paj.project4vc.entity;
 
 import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Set;
+
 import paj.project4vc.enums.UserRole;
 
 @Entity
 @Table(name = "user")
 @NamedQuery(name = "User.findUserByUsername", query = "SELECT u FROM UserEntity u WHERE u.username = :username")
-@NamedQuery(name = "User.findUserByToken", query = "SELECT u FROM UserEntity u WHERE u.tokens = :token")
+@NamedQuery(name = "User.findUserByToken", query = "SELECT u FROM UserEntity u JOIN u.tokens t WHERE t.tokenValue = :token")
+@NamedQuery(name = "User.findUserByEmail", query = "SELECT u FROM UserEntity u WHERE u.email = :email")
 @NamedQuery(name = "User.findUserById", query = "SELECT u FROM UserEntity u WHERE u.id = :id")
-@NamedQuery(name = "User.findAllUsers", query = "SELECT u FROM UserEntity u")
+@NamedQuery(name = "User.findAllActiveUsers", query = "SELECT u FROM UserEntity u WHERE u.deleted = false")
 
-public class UserEntity implements Serializable{
+public class UserEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,7 +25,13 @@ public class UserEntity implements Serializable{
     @Column(name = "id", nullable = false, unique = true, updatable = false)
     private int id;
 
-    @Column(name="email", nullable=false, unique = true)
+    @Column(name = "username", nullable = false, unique = true, updatable = false)
+    private String username;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "first_name", nullable = false)
@@ -33,26 +43,20 @@ public class UserEntity implements Serializable{
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "profile_photo", nullable = false)
+    @Column(name = "profile_photo")
     private String photo;
 
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "username", nullable = false, unique = true, updatable = false)
-    private String username;
-
-    @Column(name="deleted", nullable = false)
+    @Column(name = "deleted", nullable = false)
     private boolean deleted;
 
     @Column(name = "role", nullable = false)
     private int role;
 
     @OneToMany(mappedBy = "creator")
-    private ArrayList<TaskEntity> tasks;
+    private Set<TaskEntity> tasks;
 
     @OneToMany(mappedBy = "user")
-    private ArrayList<TokenEntity> tokens;
+    private Set<TokenEntity> tokens;
 
     //default empty constructor
     public UserEntity() {
@@ -73,6 +77,7 @@ public class UserEntity implements Serializable{
     public void setEmail(String email) {
         this.email = email;
     }
+
     public String getFirstName() {
         return firstName;
     }
@@ -96,6 +101,7 @@ public class UserEntity implements Serializable{
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
     public String getPhoto() {
         return photo;
     }
@@ -103,6 +109,7 @@ public class UserEntity implements Serializable{
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+
     public String getPassword() {
         return password;
     }
@@ -122,21 +129,24 @@ public class UserEntity implements Serializable{
     public boolean isDeleted() {
         return deleted;
     }
+
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
 
-    public ArrayList<TokenEntity> getTokens() {
+    public Set<TokenEntity> getTokens() {
         return tokens;
     }
-    public void setTokens(ArrayList<TokenEntity> tokens) {
+
+    public void setTokens(Set<TokenEntity> tokens) {
         this.tokens = tokens;
     }
-    public ArrayList<TaskEntity> getTasks() {
+
+    public Set<TaskEntity> getTasks() {
         return tasks;
     }
 
-    public void setTasks(ArrayList<TaskEntity> tasks) {
+    public void setTasks(Set<TaskEntity> tasks) {
         this.tasks = tasks;
     }
 

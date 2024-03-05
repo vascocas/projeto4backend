@@ -14,6 +14,7 @@ public class UserDao extends AbstractDao<UserEntity> {
         super(UserEntity.class);
     }
 
+
     public UserEntity findUserByToken(String token) {
         try {
             return (UserEntity) em.createNamedQuery("User.findUserByToken").setParameter("token", token)
@@ -32,6 +33,15 @@ public class UserDao extends AbstractDao<UserEntity> {
         }
     }
 
+    public UserEntity findUserByEmail(String email) {
+        try {
+            return (UserEntity) em.createNamedQuery("User.findUserByEmail").setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
     public UserEntity findUserById(int id) {
         try {
             return (UserEntity) em.createNamedQuery("User.findUserById")
@@ -42,10 +52,11 @@ public class UserDao extends AbstractDao<UserEntity> {
         }
     }
 
-    public ArrayList<UserEntity> allUsers() {
+    public ArrayList<UserEntity> findAllActiveUsers() {
         try {
-            ArrayList<UserEntity> userEntityEntities = (ArrayList<UserEntity>) em.createNamedQuery("User.findAllUsers").getResultList();
-            return userEntityEntities;
+            ArrayList<UserEntity> activeUsers = (ArrayList<UserEntity>) em.createNamedQuery("User.findAllActiveUsers")
+                    .getResultList();
+            return activeUsers;
         } catch (Exception e) {
             return null;
         }

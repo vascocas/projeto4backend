@@ -2,6 +2,7 @@ package paj.project4vc.dto;
 
 
 
+import jakarta.validation.constraints.NotBlank;
 import paj.project4vc.enums.UserRole;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
@@ -111,7 +112,7 @@ public class UserDto {
         return photo;
     }
 
-    public void setPhoto(String photoURL) {
+    public void setPhoto(String photo) {
         this.photo = photo;
     }
 

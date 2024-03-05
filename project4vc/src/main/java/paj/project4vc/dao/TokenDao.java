@@ -22,5 +22,4 @@ public class TokenDao extends AbstractDao<TokenEntity> {
             return null;
         }
     }
-
 }
