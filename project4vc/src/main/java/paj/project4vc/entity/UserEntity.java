@@ -48,12 +48,11 @@ public class UserEntity implements Serializable{
     @Column(name = "role", nullable = false)
     private int role;
 
-    @OneToMany
-    @JoinColumn(name = "user_id") // Define the foreign key column
-    private ArrayList<TokenEntity> tokens; //
-
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "category")
     private ArrayList<TaskEntity> tasks;
+
+    @OneToMany(mappedBy = "user")
+    private ArrayList<TokenEntity> tokens;
 
     //default empty constructor
     public UserEntity() {

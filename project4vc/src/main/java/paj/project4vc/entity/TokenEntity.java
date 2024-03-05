@@ -22,8 +22,8 @@ public class TokenEntity implements Serializable {
     @Column(name = "token_expiration")
     private Instant tokenExpiration;
 
+    //Owning Side User - Token
     @ManyToOne
-    @JoinColumn(name = "user_id")
     private UserEntity user;
 
     public TokenEntity() {
