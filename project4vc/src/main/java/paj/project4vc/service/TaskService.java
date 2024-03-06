@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 
 @Path("/tasks")
 public class TaskService {
@@ -38,11 +39,14 @@ public class TaskService {
     public Response getAllTasks(@HeaderParam("token") String token) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
+        } else {
+            ArrayList<TaskDto> taskDtos = taskBean.getAllTasks();
+            if (taskDtos != null) {
+                return Response.status(200).entity(taskDtos).build();
+            } else {
+                return Response.status(404).entity("No tasks found").build();
+            }
         }
-       else {
-
-        return taskBean.getAllTasks();
-    }
     }
 
     // Return Task by Id
@@ -69,7 +73,12 @@ public class TaskService {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        return taskBean.getUserTasks(token, username);
+        ArrayList<TaskDto> tasks = taskBean.getUserTasks(token, username);
+        if (tasks != null) {
+            return Response.status(200).entity(tasks).build();
+        } else {
+            return Response.status(404).entity("No tasks found for this user").build();
+        }
     }
 
     // Return all deleted Tasks
@@ -80,7 +89,12 @@ public class TaskService {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        return taskBean.getDeletedTasks(token);
+        ArrayList<TaskDto> tasks = taskBean.getDeletedTasks(token);
+        if (tasks != null) {
+            return Response.status(200).entity(tasks).build();
+        } else {
+            return Response.status(404).entity("No deleted tasks found").build();
+        }
     }
 
     // Return all Tasks with same Category
@@ -93,6 +107,13 @@ public class TaskService {
         }
         return taskBean.getCategoryTasks(token, categoryName);
     }
+    ArrayList<TaskDto> tasks = taskBean.getDeletedTasks(token);
+        if (tasks != null) {
+        return Response.status(200).entity(tasks).build();
+    } else {
+        return Response.status(404).entity("No deleted tasks found").build();
+    }
+}
 
     // Add Task
     @POST
@@ -228,7 +249,11 @@ public class TaskService {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        return taskBean.removeTask(token, taskId);
+        if (taskBean.removeTask(token, taskId)) {
+            return Response.status(200).entity("Task updated successfully").build();
+        } else {
+            return Response.status(404).entity("Impossible to update task.").build();
+        }
     }
 
     // Restore Task from Recycle bin
@@ -239,7 +264,11 @@ public class TaskService {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        return taskBean.restoreDeletedTask(token, taskId);
+        if (taskBean.restoreDeletedTask(token, taskId)) {
+            return Response.status(200).entity("Task restored successfully").build();
+        } else {
+            return Response.status(404).entity("Impossible to restored task.").build();
+        }
     }
 
     // Remove Task Permanently
@@ -263,7 +292,11 @@ public class TaskService {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        return taskBean.removeAllUserTasks(token);
+        if (taskBean.removeAllUserTasks(token)) {
+            return Response.status(200).entity("Task deleted successfully").build();
+        } else {
+            return Response.status(404).entity("Impossible to delete tasks.").build();
+        }
     }
 
     // Return all Categories
