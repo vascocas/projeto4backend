@@ -1,9 +1,9 @@
 package paj.project4vc.dao;
 
-import jakarta.persistence.NamedQuery;
 import paj.project4vc.entity.UserEntity;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.NoResultException;
+
 import java.util.ArrayList;
 
 @Stateless

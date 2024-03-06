@@ -77,10 +77,7 @@ public class UserBean implements Serializable {
         if (userByEmail != null) {
             return false;
         }
-        // Encrypt the password before storing
-        String encryptedPassword = passEncoder.encode(user.getPassword());
         UserEntity newUser = convertUserDtotoEntity(user);
-        newUser.setPassword(encryptedPassword);
         newUser.setRole(UserRole.DEVELOPER);
         userDao.persist(newUser);
         return true;
@@ -158,7 +155,9 @@ public class UserBean implements Serializable {
             }
             TokenEntity t = tokenDao.findTokenByValue(token);
             if (u != null && t != null) {
-                u.setPassword(user.getPassword());
+                // Encrypt the password before storing
+                String encryptedPassword = passEncoder.encode(user.getPassword());
+                u.setPassword(encryptedPassword);
                 u.setEmail(user.getEmail());
                 u.setFirstName(user.getFirstName());
                 u.setLastName(user.getLastName());
@@ -174,8 +173,8 @@ public class UserBean implements Serializable {
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
             // Check if the user is not a DEVELOPER or SCRUM_MASTER: cannot change user role
-            //if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
-            //  return false;
+           // if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
+              //  return false;
             //}
             UserEntity u = userDao.findUserByUsername(user.getUsername());
             TokenEntity t = tokenDao.findTokenByValue(token);
@@ -217,20 +216,18 @@ public class UserBean implements Serializable {
             }
             // Check if a user with the provided username already exists
             UserEntity userByUsername = userDao.findUserByUsername(user.getUsername());
-            if (userByUsername != null) {
-                return false;
+            if (userByUsername == null) {
+                // Check if a user with the provided email already exists
+                UserEntity userByEmail = userDao.findUserByEmail(user.getEmail());
+                if (userByEmail == null) {
+                    TokenEntity t = tokenDao.findTokenByValue(token);
+                    UserEntity newUser = convertUserDtotoEntity(user);
+                    newUser.setRole(user.getRole());
+                    userDao.persist(newUser);
+                    t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
+                    return true;
+                }
             }
-            // Check if a user with the provided email already exists
-            UserEntity userByEmail = userDao.findUserByEmail(user.getEmail());
-            if (userByEmail != null) {
-                return false;
-            }
-            TokenEntity t = tokenDao.findTokenByValue(token);
-            UserEntity newUser = convertUserDtotoEntity(user);
-            newUser.setRole(user.getRole());
-            userDao.persist(newUser);
-            t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
-            return true;
         }
         return false;
     }
@@ -253,16 +250,14 @@ public class UserBean implements Serializable {
         } else return null;
     }
 
-    public boolean deleteUser(String username, String token) {
+    public boolean deleteUser(String token, String username) {
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
             // Check if the user is a DEVELOPER or SCRUM_MASTER: cannot delete a user
             if (userRole != UserRole.DEVELOPER && userRole != UserRole.SCRUM_MASTER) {
-                TokenEntity t = tokenDao.findTokenByValue(token);
                 UserEntity u = userDao.findUserByUsername(username);
-                System.out.println(u);
-                System.out.println(u.getUsername());
+                TokenEntity t = tokenDao.findTokenByValue(token);
                 if (t != null || u != null) {
                     u.setDeleted(true);
                     t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
@@ -301,7 +296,9 @@ public class UserBean implements Serializable {
     private UserEntity convertUserDtotoEntity(UserDto user) {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(user.getUsername());
-        userEntity.setPassword(user.getPassword());
+        // Encrypt the password before storing
+        String encryptedPassword = passEncoder.encode(user.getPassword());
+        userEntity.setPassword(encryptedPassword);
         userEntity.setEmail(user.getEmail());
         userEntity.setFirstName(user.getFirstName());
         userEntity.setLastName(user.getLastName());

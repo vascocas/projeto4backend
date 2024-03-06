@@ -3,19 +3,19 @@ package paj.project4vc.bean;
 import paj.project4vc.dao.CategoryDao;
 import paj.project4vc.dao.TaskDao;
 import paj.project4vc.dao.UserDao;
+import paj.project4vc.dto.LoginDto;
 import paj.project4vc.dto.TaskDto;
 import paj.project4vc.entity.CategoryEntity;
 import paj.project4vc.entity.TaskEntity;
 import paj.project4vc.entity.UserEntity;
+import paj.project4vc.enums.TaskPriority;
 import paj.project4vc.enums.TaskState;
 import paj.project4vc.enums.UserRole;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
-import jakarta.ws.rs.core.Response;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
+
 
 @Stateless
 public class TaskBean implements Serializable {
@@ -60,31 +60,28 @@ public class TaskBean implements Serializable {
     public boolean removeTask(String token, int id) {
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
-        if (user == null) {
-            return false;
-        }
-        UserRole userRole = user.getRole();
-        // Check if the user is a SCRUM_MASTER or PRODUCT_OWNER
-        if (userRole == UserRole.SCRUM_MASTER || userRole == UserRole.PRODUCT_OWNER) {
-            TaskEntity t = taskDao.findTaskById(id);
-            if (t != null) {
-                t.setDeleted(true);
-                return true;
+        if (user != null) {
+            UserRole userRole = user.getRole();
+            // Check if the user is a SCRUM_MASTER or PRODUCT_OWNER
+            if (userRole == UserRole.SCRUM_MASTER || userRole == UserRole.PRODUCT_OWNER) {
+                TaskEntity t = taskDao.findTaskById(id);
+                if (t != null) {
+                    t.setDeleted(true);
+                    return true;
+                }
             }
-        } else {
-            return false;
         }
         return false;
     }
 
-    public boolean removeAllUserTasks(String token) {
+    public boolean removeAllUserTasks(String token, LoginDto username) {
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
         if (user != null) {
             UserRole userRole = user.getRole();
             // Check if the user is a PRODUCT_OWNER
             if (userRole == UserRole.PRODUCT_OWNER) {
-                UserEntity userEntity = userDao.findUserByUsername(user.getUsername());
+                UserEntity userEntity = userDao.findUserByUsername(username.getUsername());
                 if (userEntity != null) {
                     ArrayList<TaskEntity> tasks = taskDao.findTasksByUser(userEntity);
                     if (tasks != null) {
@@ -117,25 +114,21 @@ public class TaskBean implements Serializable {
         return false;
     }
 
-    public Response removeTaskPermanently(String token, int id) {
+    public boolean removeTaskPermanently(String token, int id) {
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
-        if (user == null) {
-            return Response.status(404).entity("No user found").build();
-        }
-        UserRole userRole = user.getRole();
-        // Check if the user is a PRODUCT_OWNER
-        if (userRole == UserRole.PRODUCT_OWNER) {
-            TaskEntity t = taskDao.findTaskById(id);
-            if (t != null) {
-                taskDao.remove(t);
-                return Response.status(200).entity("Task removed permanently successfully").build(); // Successful response with tasks;
-            } else {
-                return Response.status(404).entity("Task not found").build();
+        if (user != null) {
+            UserRole userRole = user.getRole();
+            // Check if the user is a PRODUCT_OWNER
+            if (userRole == UserRole.PRODUCT_OWNER) {
+                TaskEntity t = taskDao.findTaskById(id);
+                if (t != null) {
+                    taskDao.remove(t);
+                    return true;
+                }
             }
-        } else {
-            return Response.status(401).entity("Unauthorized: Only SCRUM_MASTER or PRODUCT_OWNER can access user tasks").build(); // Unauthorized access
         }
+        return false;
     }
 
     public TaskDto getTask(int id) {
@@ -195,24 +188,20 @@ public class TaskBean implements Serializable {
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
         if (user != null) {
-        UserRole userRole = user.getRole();
-        // Check if the user is a SCRUM_MASTER or PRODUCT_OWNER
-        if (userRole == UserRole.SCRUM_MASTER || userRole == UserRole.PRODUCT_OWNER) {
-            CategoryEntity ctgEntity = categoryDao.findCategoryByName(categoryName);
-            if (ctgEntity != null) {
-                ArrayList<TaskEntity> tasks = taskDao.findTasksByCategoryId(ctgEntity.getId());
-                if (tasks != null && !tasks.isEmpty()) {
-                    ArrayList<TaskDto> taskDtos = convertTasksFromEntityListToDtoList(tasks);
-                    return taskDtos;
-                } else {
-                    return Response.status(404).entity("No tasks found for this category").build(); // No tasks found
+            UserRole userRole = user.getRole();
+            // Check if the user is a SCRUM_MASTER or PRODUCT_OWNER
+            if (userRole == UserRole.SCRUM_MASTER || userRole == UserRole.PRODUCT_OWNER) {
+                CategoryEntity ctgEntity = categoryDao.findCategoryByName(categoryName);
+                if (ctgEntity != null) {
+                    ArrayList<TaskEntity> tasks = taskDao.findTasksByCategoryId(ctgEntity.getId());
+                    if (tasks != null && !tasks.isEmpty()) {
+                        ArrayList<TaskDto> taskDtos = convertTasksFromEntityListToDtoList(tasks);
+                        return taskDtos;
+                    }
                 }
-            } else {
-                return Response.status(404).entity("Category not found").build(); // Category not found
             }
-        } else {
-            return Response.status(401).entity("Unauthorized: Only SCRUM_MASTER or PRODUCT_OWNER can access user tasks").build(); // Unauthorized access
         }
+        return null;
     }
 
     public boolean updateTask(String token, TaskDto taskDto, CategoryEntity taskCategory) {

@@ -20,6 +20,7 @@ public class UserService {
     @Inject
     UserBean userBean;
 
+    // Makes Login (Return token)
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -32,6 +33,7 @@ public class UserService {
         return Response.status(403).entity("Wrong Username or Password!").build();
     }
 
+    // Register new user
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -62,6 +64,7 @@ public class UserService {
         return Response.status(401).entity("There is a user with the same username").build();
     }
 
+    // Makes Logout
     @PUT
     @Path("/logout")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -73,11 +76,12 @@ public class UserService {
         }
     }
 
+    // Get user by Id
     @GET
-    @Path("/{id}}")
+    @Path("/user/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response userById(@PathParam("id") Integer id, @HeaderParam("token") String token) {
+    public Response userById(@PathParam("id") int id, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
             UserDto dto = userBean.userById(id, token);
             return Response.status(200).entity(dto).build();
@@ -87,6 +91,7 @@ public class UserService {
         }
     }
 
+    // Get logged user
     @GET
     @Path("/user")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -101,6 +106,7 @@ public class UserService {
         }
     }
 
+    // Get list of usernames (Login dto)
     @GET
     @Path("/usernames")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -114,6 +120,7 @@ public class UserService {
         return Response.status(200).entity(usernames).build();
     }
 
+    // Get list of users (User dto)
     @GET
     @Path("/users")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -128,6 +135,7 @@ public class UserService {
         }
     }
 
+    // Get user by username
     @GET
     @Path("/{username}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -142,6 +150,7 @@ public class UserService {
         }
     }
 
+    // Edit user profile
     @PUT
     @Path("/profile")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -156,6 +165,7 @@ public class UserService {
         }
     }
 
+    // Get role of logged user
     @GET
     @Path("/role")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -170,6 +180,7 @@ public class UserService {
         }
     }
 
+    // Creates a new user
     @POST
     @Path("/createUser")
     @Produces(MediaType.APPLICATION_JSON)
@@ -197,23 +208,24 @@ public class UserService {
             return Response.status(401).entity("Role cannot be empty").build();
         }
         // Proceed with registering the user
-        if (userBean.tokenExist(token)) {
-            if (userBean.createUser(token, user)) {
-                return Response.status(200).entity("Profile updated!").build();
-            } else return Response.status(401).entity("Error").build();
-        } else {
+        if (!userBean.tokenExist(token)) {
             userBean.logout(token);
             return Response.status(401).entity("Invalid Token!").build();
+        } else {
+            if (userBean.createUser(token, user)) {
+                return Response.status(200).entity("New user created!").build();
+            } else return Response.status(401).entity("Error").build();
         }
     }
 
+    // Delete user by username (Recycle bin)
     @PUT
     @Path("/delete/{username}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUser(@HeaderParam("token") String token, @PathParam("username") String username) {
         if (userBean.tokenExist(token)) {
-            if (userBean.deleteUser(username, token)) {
+            if (userBean.deleteUser(token, username)) {
                 return Response.status(200).entity("Profile deleted").build();
             } else {
                 return Response.status(401).entity("Error").build();
@@ -224,15 +236,15 @@ public class UserService {
         }
     }
 
+    // Edit user role
     @PUT
     @Path("/role")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateRole(LoginDto user, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
-            if(userBean.updateRole(user, token)) {
+            if (userBean.updateRole(user, token)) {
                 return Response.status(200).entity("Role updated").build();
-            }
-            else{
+            } else {
                 return Response.status(401).entity("Error").build();
             }
         } else {
@@ -241,6 +253,7 @@ public class UserService {
         }
     }
 
+    // Remove user by username (Permanently)
     @DELETE
     @Path("/{username}")
     @Consumes(MediaType.APPLICATION_JSON)
