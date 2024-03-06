@@ -1,6 +1,7 @@
 package paj.project4vc.bean;
 
 
+import org.hibernate.grammars.hql.HqlParser;
 import paj.project4vc.dao.CategoryDao;
 import paj.project4vc.dao.TaskDao;
 import paj.project4vc.dao.UserDao;
@@ -13,6 +14,7 @@ import paj.project4vc.enums.TaskPriority;
 import paj.project4vc.enums.TaskState;
 import paj.project4vc.enums.UserRole;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -79,8 +81,12 @@ class TaskBeanTest {
         tEntity.setId(1);
         tEntity.setTitle("Tarefa_teste1");
         tEntity.setDescription("Esta tarefa serve para testes");
-        tEntity.setStartDate("2024-06-12");
-        tEntity.setEndDate("2024-06-18");
+        // Creating a start date
+        LocalDate startDate = LocalDate.of(2024, 3, 1);
+        tEntity.setStartDate(startDate);
+        // Creating an end date
+        LocalDate endDate = LocalDate.of(2024, 3, 31);
+        tEntity.setEndDate(endDate);
         tEntity.setPriority(TaskPriority.LOW_PRIORITY);
         tEntity.setCreator(userEntity);
         tEntity.setCategory(ctgEntity);
@@ -149,8 +155,13 @@ class TaskBeanTest {
     @Test
     void testPersistTask() {
         // tests
+        // Creating a start date
+        LocalDate startDate = LocalDate.of(2024, 3, 1);
+        // Creating an end date
+        LocalDate endDate = LocalDate.of(2024, 3, 31);
+
         TaskDto testDto = new TaskDto(8, "Task_test", "Description for Task", TaskState.TODO, TaskPriority.MEDIUM_PRIORITY,
-                "2024-03-01", "2024-03-10", false, "Frontend");
+                startDate, endDate, false, "Frontend");
 
         assertTrue(taskBean.addTask("token_id", testDto));
         ArgumentCaptor<TaskEntity> taskEntityCaptor = ArgumentCaptor.forClass(TaskEntity.class);
@@ -175,9 +186,13 @@ class TaskBeanTest {
 
     @Test
     void testUpdateTask() {
+        // Creating a start date
+        LocalDate startDate = LocalDate.of(2024, 3, 1);
+        // Creating an end date
+        LocalDate endDate = LocalDate.of(2024, 3, 31);
         // Tests
         TaskDto taskDto = new TaskDto(1, "UpdatedTask", "Updated Description", TaskState.DOING, TaskPriority.HIGH_PRIORITY,
-                "2024-03-01", "2024-03-10", false, "Frontend");
+                startDate, endDate, false, "Frontend");
         CategoryEntity categoryEntity = new CategoryEntity();
         categoryEntity.setId(1);
         categoryEntity.setCategoryName("Frontend");

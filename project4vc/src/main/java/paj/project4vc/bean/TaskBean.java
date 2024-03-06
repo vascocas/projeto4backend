@@ -8,7 +8,6 @@ import paj.project4vc.dto.TaskDto;
 import paj.project4vc.entity.CategoryEntity;
 import paj.project4vc.entity.TaskEntity;
 import paj.project4vc.entity.UserEntity;
-import paj.project4vc.enums.TaskPriority;
 import paj.project4vc.enums.TaskState;
 import paj.project4vc.enums.UserRole;
 import jakarta.ejb.EJB;

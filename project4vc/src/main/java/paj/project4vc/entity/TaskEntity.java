@@ -4,6 +4,7 @@ import paj.project4vc.enums.TaskPriority;
 import paj.project4vc.enums.TaskState;
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "task")
@@ -29,10 +30,10 @@ public class TaskEntity implements Serializable {
     private String description;
 
     @Column(name = "start_date", nullable = false)
-    private String startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)
-    private String endDate;
+    private LocalDate endDate;
 
     @Column(name = "state", nullable = false)
     private int state;
@@ -78,19 +79,19 @@ public class TaskEntity implements Serializable {
         this.description = description;
     }
 
-    public String getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

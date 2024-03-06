@@ -144,8 +144,8 @@ public class TaskService {
             return Response.status(400).entity("Both start date and end date must be provided").build();
         }
         try {
-            LocalDate startDate = LocalDate.parse(task.getStartDate());
-            LocalDate endDate = LocalDate.parse(task.getEndDate());
+            LocalDate startDate = task.getStartDate();
+            LocalDate endDate = task.getEndDate();
 
             if (!endDate.isAfter(startDate)) {
                 return Response.status(400).entity("End date must be after start date").build();
@@ -190,8 +190,8 @@ public class TaskService {
             return Response.status(400).entity("Both start date and end date must be provided").build();
         }
         try {
-            LocalDate startDate = LocalDate.parse(task.getStartDate());
-            LocalDate endDate = LocalDate.parse(task.getEndDate());
+            LocalDate startDate = task.getStartDate();
+            LocalDate endDate = task.getEndDate();
 
             if (!endDate.isAfter(startDate)) {
                 return Response.status(400).entity("End date must be after start date").build();
