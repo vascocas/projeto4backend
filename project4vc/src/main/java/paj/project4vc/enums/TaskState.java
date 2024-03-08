@@ -22,6 +22,6 @@ public enum TaskState {
                 return state;
             }
         }
-        throw new IllegalArgumentException("No such priority with value: " + value);
+        throw new IllegalArgumentException("No such state with value: " + value);
     }
 }

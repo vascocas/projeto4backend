@@ -113,6 +113,26 @@ public class TaskService {
         }
     }
 
+    // Method to check if the provided priority is valid
+    private boolean isValidPriority(TaskPriority priority) {
+        for (TaskPriority validPriority : TaskPriority.values()) {
+            if (validPriority == priority) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Method to check if the provided state is valid
+    private boolean isValidState(TaskState state) {
+        for (TaskState validState : TaskState.values()) {
+            if (validState == state) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Add Task
     @POST
     @Path("/")
@@ -128,16 +148,9 @@ public class TaskService {
         if (task.getDescription() == null || task.getDescription().isEmpty()) {
             return Response.status(400).entity("Task description cannot be empty").build();
         }
-        // Set default priority if not provided
-        if (task.getPriority() == null) {
+        // Set default priority if not provided or invalid
+        if (task.getPriority() == null || !isValidPriority(task.getPriority())) {
             task.setPriority(TaskPriority.LOW_PRIORITY);
-        } else {
-            // Validate if the provided priority is within the possible values
-            try {
-                TaskPriority.valueOf(task.getPriority().name());
-            } catch (IllegalArgumentException e) {
-                return Response.status(400).entity("Invalid priority input value").build();
-            }
         }
         // Perform date validation
         if (task.getStartDate() == null || task.getEndDate() == null) {
@@ -179,11 +192,9 @@ public class TaskService {
         if (task.getDescription() == null || task.getDescription().isEmpty()) {
             return Response.status(400).entity("Task description cannot be empty").build();
         }
-        // Validate if the provided priority is within the possible values
-        try {
-            TaskPriority.valueOf(task.getPriority().name());
-        } catch (IllegalArgumentException e) {
-            return Response.status(400).entity("Invalid priority input value").build();
+        // Set default priority if not provided or invalid
+        if (task.getPriority() == null || !isValidPriority(task.getPriority())) {
+            task.setPriority(TaskPriority.LOW_PRIORITY);
         }
         // Perform date validation
         if (task.getStartDate() == null || task.getEndDate() == null) {
@@ -220,14 +231,9 @@ public class TaskService {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        // Validate if the provided task state is within the possible values
-        if (newStatus == null || newStatus.getState() == null) {
-            return Response.status(400).entity("Invalid task state input value").build();
-        }
-        try {
-            TaskState.valueOf(newStatus.getState().name());
-        } catch (IllegalArgumentException e) {
-            return Response.status(400).entity("Invalid task state input value").build();
+        // Set default state if not provided or invalid
+        if (newStatus.getState() == null || !isValidState(newStatus.getState())) {
+            newStatus.setState(TaskState.TODO);
         }
         if (taskBean.updateTaskStatus(taskId, newStatus.getState())) {
             return Response.status(200).entity("Task status updated successfully").build();
@@ -274,7 +280,7 @@ public class TaskService {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        if(taskBean.removeTaskPermanently(token, taskId)){
+        if (taskBean.removeTaskPermanently(token, taskId)) {
             return Response.status(200).entity("Task deleted permanently").build();
         }
         return Response.status(404).entity("Impossible to delete task.").build();
