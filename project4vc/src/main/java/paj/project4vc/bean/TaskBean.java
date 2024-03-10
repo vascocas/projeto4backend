@@ -5,6 +5,7 @@ import paj.project4vc.dao.TaskDao;
 import paj.project4vc.dao.UserDao;
 import paj.project4vc.dto.LoginDto;
 import paj.project4vc.dto.TaskDto;
+import paj.project4vc.dto.TaskStateDto;
 import paj.project4vc.entity.CategoryEntity;
 import paj.project4vc.entity.TaskEntity;
 import paj.project4vc.entity.UserEntity;
@@ -230,10 +231,10 @@ public class TaskBean implements Serializable {
         return false;
     }
 
-    public boolean updateTaskStatus(int id, TaskState newStatus) {
-        TaskEntity t = taskDao.findTaskById(id);
+    public boolean updateTaskStatus(TaskStateDto newStatus) {
+        TaskEntity t = taskDao.findTaskById(newStatus.getId());
         if (t != null) {
-            t.setState(newStatus);
+            t.setState(newStatus.getState());
             return true;
         }
         return false;

@@ -6,6 +6,7 @@ import paj.project4vc.dao.CategoryDao;
 import paj.project4vc.dao.TaskDao;
 import paj.project4vc.dao.UserDao;
 import paj.project4vc.dto.TaskDto;
+import paj.project4vc.dto.TaskStateDto;
 import paj.project4vc.entity.CategoryEntity;
 import paj.project4vc.entity.TaskEntity;
 import paj.project4vc.entity.TokenEntity;
@@ -139,12 +140,13 @@ class TaskBeanTest {
     @Test
     void testMoveTaskColumn() {
         TaskEntity taskEntity = new TaskEntity();
+        TaskStateDto newGoodState = new TaskStateDto(1, TaskState.DOING);
+        TaskStateDto newBadState = new TaskStateDto(1, TaskState.DOING);
 
         // Tests
-        taskBean.updateTaskStatus(1, TaskState.DOING);
+        taskBean.updateTaskStatus(newGoodState);
         assertEquals(TaskState.DOING, taskDao.findTaskById(1).getState());
-
-        assertFalse(taskBean.updateTaskStatus(5, TaskState.DOING));
+        assertFalse(taskBean.updateTaskStatus(newBadState));
 
         // Verifications
         verify(taskDao, atLeast(2)).findTaskById(1);

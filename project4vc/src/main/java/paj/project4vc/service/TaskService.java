@@ -226,8 +226,7 @@ public class TaskService {
     @PUT
     @Path("/status")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateTaskStatus(@HeaderParam("token") String token, @HeaderParam("taskId") int taskId,
-                                     TaskStateDto newStatus) {
+    public Response updateTaskStatus(@HeaderParam("token") String token, TaskStateDto newStatus) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
@@ -235,7 +234,7 @@ public class TaskService {
         if (newStatus.getState() == null || !isValidState(newStatus.getState())) {
             newStatus.setState(TaskState.TODO);
         }
-        if (taskBean.updateTaskStatus(taskId, newStatus.getState())) {
+        if (taskBean.updateTaskStatus(newStatus)){
             return Response.status(200).entity("Task status updated successfully").build();
         } else {
             return Response.status(404).entity("Impossible to update task status. Task not found or invalid status").build();
