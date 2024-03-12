@@ -204,7 +204,7 @@ public class TaskService {
             LocalDate startDate = task.getStartDate();
             LocalDate endDate = task.getEndDate();
 
-            if (!endDate.isAfter(startDate)) {
+            if (!endDate.isAfter(startDate) && !endDate.isEqual(startDate)) {
                 return Response.status(400).entity("End date must be after start date").build();
             }
         } catch (DateTimeParseException e) {
