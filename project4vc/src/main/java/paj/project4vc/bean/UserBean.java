@@ -34,7 +34,8 @@ public class UserBean implements Serializable {
 
     int tokenTimer = 10000000;
 
-    public String login(String username, String password) {
+    public LoginDto login(String username, String password) {
+        LoginDto returnedLogin = new LoginDto();
         UserEntity userEntity = userDao.findUserByUsername(username);
         // Retrieve the hashed password associated with the user
         String hashedPassword = userEntity.getPassword();
@@ -45,7 +46,11 @@ public class UserBean implements Serializable {
             tokenEntity.setUser(userEntity);
             tokenEntity.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
             tokenDao.persist(tokenEntity);
-            return tokenValue;
+            returnedLogin.setToken(tokenValue);
+            returnedLogin.setRole(userEntity.getRole());
+            returnedLogin.setPhoto(userEntity.getPhoto());
+            returnedLogin.setUsername(username);
+            return returnedLogin;
         }
         return null;
     }

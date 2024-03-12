@@ -160,7 +160,7 @@ public class TaskService {
             LocalDate startDate = task.getStartDate();
             LocalDate endDate = task.getEndDate();
 
-            if (!endDate.isAfter(startDate)) {
+            if (!endDate.isAfter(startDate) && !endDate.isEqual(startDate)) {
                 return Response.status(400).entity("End date must be after start date").build();
             }
         } catch (DateTimeParseException e) {
@@ -250,9 +250,9 @@ public class TaskService {
             return Response.status(401).entity("Invalid token").build();
         }
         if (taskBean.removeTask(token, taskId)) {
-            return Response.status(200).entity("Task updated successfully").build();
+            return Response.status(200).entity("Task delete successfully").build();
         } else {
-            return Response.status(404).entity("Impossible to update task.").build();
+            return Response.status(404).entity("Impossible to delete task.").build();
         }
     }
 

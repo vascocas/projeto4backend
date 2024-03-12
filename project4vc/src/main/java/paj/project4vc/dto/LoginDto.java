@@ -17,16 +17,19 @@ public class LoginDto {
     private UserRole role;
     @XmlElement
     private String token;
+    @XmlElement
+    private String photo;
 
     public LoginDto() {
     }
 
 
-    public LoginDto(String username, String password, UserRole role, String token) {
+    public LoginDto(String username, String password, UserRole role, String token, String photo) {
         this.username = username;
         this.password = password;
         this.role = role;
         this.token = token;
+        this.photo = photo;
     }
 
     public String getUsername() {
@@ -59,5 +62,13 @@ public class LoginDto {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

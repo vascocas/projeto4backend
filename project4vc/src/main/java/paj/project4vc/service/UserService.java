@@ -26,9 +26,9 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@HeaderParam("username") String username, @HeaderParam("password") String password) {
-        String token = userBean.login(username, password);
-        if (token != null) {
-            return Response.status(200).entity(token).build();
+        LoginDto login = userBean.login(username, password);
+        if (login != null) {
+            return Response.status(200).entity(login).build();
         }
         return Response.status(403).entity("Wrong Username or Password!").build();
     }
