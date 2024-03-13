@@ -171,8 +171,9 @@ public class TaskService {
         if (category == null) {
             return Response.status(400).entity("Category does not exist").build();
         }
-        if (taskBean.addTask(token, task)) {
-            return Response.status(201).entity("Task created successfully").build();
+        TaskDto newTask = taskBean.addTask(token, task);
+        if (newTask !=null) {
+            return Response.status(200).entity(newTask).build();
         } else {
             return Response.status(404).entity("Impossible to create task. Verify all fields").build();
         }
@@ -215,8 +216,9 @@ public class TaskService {
         if (category == null) {
             return Response.status(400).entity("Category does not exist").build();
         }
-        if (taskBean.updateTask(token, task, category)) {
-            return Response.status(200).entity("Task updated successfully").build();
+        TaskDto updatedTask = taskBean.updateTask(token, task, category);
+        if (updatedTask !=null) {
+            return Response.status(200).entity(updatedTask).build();
         } else {
             return Response.status(404).entity("Impossible to edit task. Verify all fields").build();
         }

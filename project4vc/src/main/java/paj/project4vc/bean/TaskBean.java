@@ -44,7 +44,7 @@ public class TaskBean implements Serializable {
         this.categoryDao = categoryDao;
     }
 
-    public boolean addTask(String token, TaskDto t) {
+    public TaskDto addTask(String token, TaskDto t) {
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
             TaskEntity taskEntity = convertTaskFromDtoToEntity(t);
@@ -52,9 +52,9 @@ public class TaskBean implements Serializable {
             taskEntity.setState(TaskState.TODO);
             taskEntity.setDeleted(false);
             taskDao.persist(taskEntity);
-            return true;
+            return convertTaskFromEntityToDto(taskEntity);
         }
-        return false;
+        return null;
     }
 
     public boolean removeTask(String token, int id) {
@@ -108,7 +108,6 @@ public class TaskBean implements Serializable {
                     t.setDeleted(false);
                     return true;
                 }
-
             }
         }
         return false;
@@ -204,31 +203,30 @@ public class TaskBean implements Serializable {
         return null;
     }
 
-    public boolean updateTask(String token, TaskDto taskDto, CategoryEntity taskCategory) {
+    public TaskDto updateTask(String token, TaskDto taskDto, CategoryEntity taskCategory) {
         TaskEntity t;
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
-        if (user == null) {
-            return false;
+        if (user != null) {
+            UserRole userRole = user.getRole();
+            // Check if the user is a DEVELOPER
+            if (userRole == UserRole.DEVELOPER) {
+                t = taskDao.findTaskByIdAndUser(taskDto.getId(), user.getUsername());
+            } else {
+                t = taskDao.findTaskById(taskDto.getId());
+            }
+            if (t != null) {
+                t.setTitle(taskDto.getTitle());
+                t.setDescription(taskDto.getDescription());
+                t.setStartDate(taskDto.getStartDate());
+                t.setEndDate(taskDto.getEndDate());
+                t.setPriority(taskDto.getPriority());
+                t.setDeleted(taskDto.isDeleted());
+                t.setCategory(taskCategory);
+                return convertTaskFromEntityToDto(t);
+            }
         }
-        UserRole userRole = user.getRole();
-        // Check if the user is a DEVELOPER
-        if (userRole == UserRole.DEVELOPER) {
-            t = taskDao.findTaskByIdAndUser(taskDto.getId(), user.getUsername());
-        } else {
-            t = taskDao.findTaskById(taskDto.getId());
-        }
-        if (t != null) {
-            t.setTitle(taskDto.getTitle());
-            t.setDescription(taskDto.getDescription());
-            t.setStartDate(taskDto.getStartDate());
-            t.setEndDate(taskDto.getEndDate());
-            t.setPriority(taskDto.getPriority());
-            t.setDeleted(taskDto.isDeleted());
-            t.setCategory(taskCategory);
-            return true;
-        }
-        return false;
+        return null;
     }
 
     public boolean updateTaskStatus(TaskStateDto newStatus) {
