@@ -30,27 +30,27 @@ public class CategoryBean implements Serializable {
     public CategoryBean() {
     }
 
-    public Response getAllCategories() {
+    public ArrayList<CategoryDto> getAllCategories() {
         ArrayList<CategoryEntity> categories = categoryDao.findAllCategories();
         if (categories != null && !categories.isEmpty()) {
             ArrayList<CategoryDto> ctgDtos = convertCategoriesFromEntityListToDtoList(categories);
-            return Response.status(200).entity(ctgDtos).build(); // Successful response with tasks
+            return ctgDtos;
         } else {
-            return Response.status(404).entity("No categories found").build();
+            return null;
         }
     }
 
-    public Response getCategorybyId() {
-        ArrayList<CategoryEntity> categories = categoryDao.findAllCategories();
-        if (categories != null && !categories.isEmpty()) {
-            ArrayList<CategoryDto> ctgDtos = convertCategoriesFromEntityListToDtoList(categories);
-            return Response.status(200).entity(ctgDtos).build(); // Successful response with tasks
+    public CategoryDto getCategorybyId(int id) {
+        CategoryEntity category = categoryDao.findCategoryById(id);
+        if (category != null) {
+            CategoryDto ctgDto = convertCategoryFromEntityToDto(category);
+            return ctgDto;
         } else {
-            return Response.status(404).entity("No categories found").build();
+            return null;
         }
     }
 
-    public Response addCategory(String token, CategoryDto category) {
+    public boolean addCategory(String token, CategoryDto category) {
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
         UserRole userRole = user.getRole();
@@ -61,16 +61,13 @@ public class CategoryBean implements Serializable {
                 CategoryEntity ctgEntity = new CategoryEntity();
                 ctgEntity.setCategoryName(category.getName());
                 categoryDao.persist(ctgEntity);
-                return Response.status(201).entity("Category created successfully").build();
-            } else {
-                return Response.status(404).entity("Category with this name already exists").build();
+                return true;
             }
-        } else {
-            return Response.status(403).entity("Invalid role permissions").build();
         }
+        return false;
     }
 
-    public Response removeCategory(String token, CategoryDto category) {
+    public boolean removeCategory(String token, CategoryDto category) {
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
         UserRole userRole = user.getRole();
@@ -81,19 +78,16 @@ public class CategoryBean implements Serializable {
                 ArrayList<TaskEntity> tasks = taskDao.findTasksByCategoryId(category.getId());
                 if (tasks == null || tasks.isEmpty()) {
                     categoryDao.remove(c);
-                    return Response.status(200).entity("Category removed successfully").build();
-                } else {
-                    return Response.status(400).entity("Category cannot be removed as there are tasks associated with it").build();
+                    return true;
                 }
-            } else {
-                return Response.status(404).entity("Category with this Id is not found").build();
             }
         } else {
-            return Response.status(403).entity("Invalid role permissions").build();
+            return false;
         }
+        return false;
     }
 
-    public Response updateCategoryName(String token, CategoryDto ctg) {
+    public boolean updateCategoryName(String token, CategoryDto ctg) {
 
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
@@ -101,18 +95,15 @@ public class CategoryBean implements Serializable {
         // Check if the user is a PRODUCT_OWNER
         if (userRole == UserRole.PRODUCT_OWNER) {
             CategoryEntity c = categoryDao.findCategoryById(ctg.getId());
-            if (c == null) {
-                return Response.status(404).entity("Category not found").build();
+            if (c != null) {
+                CategoryEntity c1 = categoryDao.findCategoryByName(ctg.getName());
+                if (c1 == null) {
+                    c.setCategoryName(ctg.getName());
+                    return true;
+                }
             }
-            CategoryEntity c1 = categoryDao.findCategoryByName(ctg.getName());
-            if (c1 != null) {
-                return Response.status(404).entity("Category name already exists").build();
-            }
-            c.setCategoryName(ctg.getName());
-            return Response.status(200).entity("Category name updated successfully").build();
-        } else {
-            return Response.status(403).entity("Invalid role permissions").build();
         }
+        return false;
     }
 
     private CategoryEntity convertCategoryFromDtoToEntity(CategoryDto c) {
@@ -129,7 +120,8 @@ public class CategoryBean implements Serializable {
         return ctgDto;
     }
 
-    private ArrayList<CategoryDto> convertCategoriesFromEntityListToDtoList(ArrayList<CategoryEntity> ctgEntityEntities) {
+    private ArrayList<CategoryDto> convertCategoriesFromEntityListToDtoList
+            (ArrayList<CategoryEntity> ctgEntityEntities) {
         ArrayList<CategoryDto> ctgDtos = new ArrayList<>();
         for (CategoryEntity c : ctgEntityEntities) {
             ctgDtos.add(convertCategoryFromEntityToDto(c));

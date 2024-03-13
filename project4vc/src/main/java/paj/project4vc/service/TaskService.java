@@ -234,7 +234,7 @@ public class TaskService {
         if (newStatus.getState() == null || !isValidState(newStatus.getState())) {
             newStatus.setState(TaskState.TODO);
         }
-        if (taskBean.updateTaskStatus(newStatus)){
+        if (taskBean.updateTaskStatus(newStatus)) {
             return Response.status(200).entity("Task status updated successfully").build();
         } else {
             return Response.status(404).entity("Impossible to update task status. Task not found or invalid status").build();
@@ -309,7 +309,12 @@ public class TaskService {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        return ctgBean.getAllCategories();
+        ArrayList<CategoryDto> categories = ctgBean.getAllCategories();
+        if (categories != null) {
+            return Response.status(200).entity(categories).build();
+        } else {
+            return Response.status(404).entity("No task categories found").build();
+        }
     }
 
     // Add Task Category
@@ -324,7 +329,11 @@ public class TaskService {
         if (category == null || category.getName() == null || category.getName().isEmpty()) {
             return Response.status(400).entity("Category name cannot be empty").build();
         }
-        return ctgBean.addCategory(token, category);
+        if (ctgBean.addCategory(token, category)) {
+            return Response.status(200).entity("Task category added successfully").build();
+        } else {
+            return Response.status(404).entity("Impossible to add task category.").build();
+        }
     }
 
     // Remove Task Category
@@ -335,7 +344,11 @@ public class TaskService {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        return ctgBean.removeCategory(token, category);
+        if (ctgBean.removeCategory(token, category)) {
+            return Response.status(200).entity("Task category removed successfully").build();
+        } else {
+            return Response.status(404).entity("Impossible to remove task category.").build();
+        }
     }
 
     // Update Task Category
@@ -349,6 +362,10 @@ public class TaskService {
         if (category == null || category.getName() == null || category.getName().isEmpty()) {
             return Response.status(400).entity("Category name cannot be empty").build();
         }
-        return ctgBean.updateCategoryName(token, category);
+        if (ctgBean.updateCategoryName(token, category)) {
+            return Response.status(200).entity("Task category updated successfully").build();
+        } else {
+            return Response.status(404).entity("Impossible to update task category.").build();
+        }
     }
 }
