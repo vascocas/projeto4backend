@@ -120,7 +120,7 @@ public class UserService {
         return Response.status(200).entity(usernames).build();
     }
 
-    // Get list of users (User dto)
+    // Get list of active users (User dto)
     @GET
     @Path("/users")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -128,6 +128,21 @@ public class UserService {
     public Response getAllUsers(@HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
             ArrayList<UserDto> users = userBean.getAllUsers(token);
+            return Response.status(200).entity(users).build();
+        } else {
+            userBean.logout(token);
+            return Response.status(401).entity("Invalid Token!").build();
+        }
+    }
+
+    // Get list of deleted users (User dto)
+    @GET
+    @Path("/deletedUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllDeletedUsers(@HeaderParam("token") String token) {
+        if (userBean.tokenExist(token)) {
+            ArrayList<UserDto> users = userBean.getDeletedUsers(token);
             return Response.status(200).entity(users).build();
         } else {
             userBean.logout(token);

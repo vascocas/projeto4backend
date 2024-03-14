@@ -255,6 +255,24 @@ public class UserBean implements Serializable {
         } else return null;
     }
 
+    public ArrayList<UserDto> getDeletedUsers(String token) {
+        UserEntity userEntity = userDao.findUserByToken(token);
+        if (userEntity != null) {
+            UserRole userRole = userEntity.getRole();
+            // Check if the user is a DEVELOPER: cannot get deleted users list
+            if (userRole == UserRole.DEVELOPER) {
+                return null;
+            }
+            TokenEntity t = tokenDao.findTokenByValue(token);
+            ArrayList<UserEntity> userDeletedList = userDao.findAllActiveUsers();
+            if (t != null && userDeletedList != null) {
+                ArrayList<UserDto> deletedUsers = convertUsersFromEntityListToUserDtoList(userDeletedList);
+                t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
+                return deletedUsers;
+            } else return null;
+        } else return null;
+    }
+
     public boolean deleteUser(String token, String username) {
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {

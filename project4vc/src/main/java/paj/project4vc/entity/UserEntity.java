@@ -15,6 +15,7 @@ import paj.project4vc.enums.UserRole;
 @NamedQuery(name = "User.findUserByEmail", query = "SELECT u FROM UserEntity u WHERE u.email = :email AND u.deleted = false")
 @NamedQuery(name = "User.findUserById", query = "SELECT u FROM UserEntity u WHERE u.id = :id AND u.deleted = false")
 @NamedQuery(name = "User.findAllActiveUsers", query = "SELECT u FROM UserEntity u WHERE u.deleted = false")
+@NamedQuery(name = "User.findAllDeletedUsers", query = "SELECT u FROM UserEntity u WHERE u.deleted = true")
 
 public class UserEntity implements Serializable {
 
