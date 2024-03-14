@@ -255,11 +255,11 @@ public class UserService {
 
     // Remove user by username (Permanently)
     @DELETE
-    @Path("/{username}")
+    @Path("/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response removeUser(@HeaderParam("token") String token, @PathParam("username") String username) {
+    public Response removeUser(@HeaderParam("token") String token, @PathParam("userId") int userId) {
         if (userBean.tokenExist(token)) {
-            if (userBean.removeUser(username, token)) {
+            if (userBean.removeUser(userId, token)) {
                 return Response.status(200).entity("Profile removed").build();
             } else {
                 return Response.status(401).entity("Error").build();

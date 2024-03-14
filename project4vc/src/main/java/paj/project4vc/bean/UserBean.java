@@ -273,7 +273,7 @@ public class UserBean implements Serializable {
         return false;
     }
 
-    public boolean removeUser(String username, String token) {
+    public boolean removeUser(int id, String token) {
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
@@ -282,7 +282,7 @@ public class UserBean implements Serializable {
                 return false;
             }
             TokenEntity t = tokenDao.findTokenByValue(token);
-            UserEntity u = userDao.findUserByUsername(username);
+            UserEntity u = userDao.findUserById(id);
             if (t != null && u != null) {
                 for (TaskEntity task : u.getTasks()) {
                     String title = task.getTitle();
