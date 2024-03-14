@@ -156,7 +156,7 @@ public class UserBean implements Serializable {
             if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
                 u = userEntity;
             } else {
-                u = userDao.findUserByUsername(user.getUsername());
+                u = userDao.findUserById(user.getId());
             }
             TokenEntity t = tokenDao.findTokenByValue(token);
             if (u != null && t != null) {
@@ -173,7 +173,7 @@ public class UserBean implements Serializable {
         }
     }
 
-    public boolean updateRole(LoginDto user, String token) {
+    public boolean updateRole(RoleDto user, String token) {
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
@@ -181,7 +181,7 @@ public class UserBean implements Serializable {
             // if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
             //  return false;
             //}
-            UserEntity u = userDao.findUserByUsername(user.getUsername());
+            UserEntity u = userDao.findUserById(user.getId());
             TokenEntity t = tokenDao.findTokenByValue(token);
             if (u != null) {
                 u.setRole(user.getRole());
@@ -264,7 +264,7 @@ public class UserBean implements Serializable {
                 return null;
             }
             TokenEntity t = tokenDao.findTokenByValue(token);
-            ArrayList<UserEntity> userDeletedList = userDao.findAllActiveUsers();
+            ArrayList<UserEntity> userDeletedList = userDao.findAllDeletedUsers();
             if (t != null && userDeletedList != null) {
                 ArrayList<UserDto> deletedUsers = convertUsersFromEntityListToUserDtoList(userDeletedList);
                 t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));

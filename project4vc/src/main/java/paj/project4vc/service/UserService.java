@@ -172,6 +172,18 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response editProfile(@HeaderParam("token") String token, UserDto user) {
         if (userBean.tokenExist(token)) {
+            if (user.getEmail() == null || user.getEmail().isEmpty()) {
+                return Response.status(401).entity("Email cannot be empty").build();
+            }
+            if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
+                return Response.status(401).entity("First name cannot be empty").build();
+            }
+            if (user.getLastName() == null || user.getLastName().isEmpty()) {
+                return Response.status(401).entity("Last name cannot be empty").build();
+            }
+            if (user.getPhone() == null || user.getPhone().isEmpty()) {
+                return Response.status(401).entity("Phone cannot be empty").build();
+            }
             userBean.editProfile(user, token);
             return Response.status(200).entity("Profile updated!").build();
         } else {
@@ -256,7 +268,7 @@ public class UserService {
     @PUT
     @Path("/role")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateRole(LoginDto user, @HeaderParam("token") String token) {
+    public Response updateRole(RoleDto user, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
             if (userBean.updateRole(user, token)) {
                 return Response.status(200).entity("Role updated").build();
@@ -269,7 +281,7 @@ public class UserService {
         }
     }
 
-    // Remove user by username (Permanently)
+    // Remove user (Permanently)
     @DELETE
     @Path("/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
