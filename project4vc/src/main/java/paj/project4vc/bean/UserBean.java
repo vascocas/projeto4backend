@@ -178,8 +178,8 @@ public class UserBean implements Serializable {
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
             // Check if the user is not a DEVELOPER or SCRUM_MASTER: cannot change user role
-           // if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
-              //  return false;
+            // if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
+            //  return false;
             //}
             UserEntity u = userDao.findUserByUsername(user.getUsername());
             TokenEntity t = tokenDao.findTokenByValue(token);
@@ -211,13 +211,13 @@ public class UserBean implements Serializable {
         }
     }
 
-    public boolean createUser(String token, UserDto user) {
+    public UserDto createUser(String token, UserDto user) {
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
             // Check if the user is a DEVELOPER or SCRUM_MASTER: cannot create user
             if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
-                return false;
+                return null;
             }
             // Check if a user with the provided username already exists
             UserEntity userByUsername = userDao.findUserByUsername(user.getUsername());
@@ -230,11 +230,11 @@ public class UserBean implements Serializable {
                     newUser.setRole(user.getRole());
                     userDao.persist(newUser);
                     t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
-                    return true;
+                    return convertUserEntitytoUserDto(newUser);
                 }
             }
         }
-        return false;
+        return null;
     }
 
     public ArrayList<UserDto> getAllUsers(String token) {

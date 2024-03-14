@@ -122,7 +122,7 @@ public class UserService {
 
     // Get list of active users (User dto)
     @GET
-    @Path("/users")
+    @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers(@HeaderParam("token") String token) {
@@ -227,8 +227,9 @@ public class UserService {
             userBean.logout(token);
             return Response.status(401).entity("Invalid Token!").build();
         } else {
-            if (userBean.createUser(token, user)) {
-                return Response.status(200).entity("New user created!").build();
+            UserDto newUser = userBean.createUser(token, user);
+            if (newUser != null) {
+                return Response.status(200).entity(newUser).build();
             } else return Response.status(401).entity("Error").build();
         }
     }
