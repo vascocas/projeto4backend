@@ -67,13 +67,13 @@ public class TaskService {
 
     // Return all Tasks from user
     @GET
-    @Path("/username")
+    @Path("/all/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllUserTasks(@HeaderParam("token") String token, @HeaderParam("username") String username) {
+    public Response getAllUserTasks(@HeaderParam("token") String token, @PathParam("userId") int userId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        ArrayList<TaskDto> tasks = taskBean.getUserTasks(token, username);
+        ArrayList<TaskDto> tasks = taskBean.getUserTasks(token, userId);
         if (tasks != null) {
             return Response.status(200).entity(tasks).build();
         } else {
@@ -99,13 +99,13 @@ public class TaskService {
 
     // Return all Tasks with same Category
     @GET
-    @Path("/category/{categoryName}")
+    @Path("/all/{categoryId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllCategoryTasks(@HeaderParam("token") String token, @PathParam("categoryName") String categoryName) {
+    public Response getAllCategoryTasks(@HeaderParam("token") String token, @PathParam("categoryId") int categoryId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        ArrayList<TaskDto> tasks = taskBean.getCategoryTasks(token, categoryName);
+        ArrayList<TaskDto> tasks = taskBean.getCategoryTasks(token, categoryId);
         if (tasks != null) {
             return Response.status(200).entity(tasks).build();
         } else {

@@ -1,5 +1,6 @@
 package paj.project4vc.bean;
 
+import jakarta.xml.bind.annotation.XmlElement;
 import paj.project4vc.dao.TokenDao;
 import paj.project4vc.dao.UserDao;
 import paj.project4vc.dto.*;
@@ -202,10 +203,10 @@ public class UserBean implements Serializable {
         } else return null;
     }
 
-    public ArrayList<LoginDto> getAllUsernames() {
+    public ArrayList<RoleDto> getAllUsernames() {
         ArrayList<UserEntity> users = userDao.findAllActiveUsers();
         if (users != null && !users.isEmpty()) {
-            return convertUsersFromEntityListToLoginDtoList(users);
+            return convertUsersFromEntityListToRoleDtoList(users);
         } else {
             return null;
         }
@@ -359,6 +360,7 @@ public class UserBean implements Serializable {
         loginDto.setUsername(user.getUsername());
         loginDto.setPassword(user.getPassword());
         loginDto.setRole(user.getRole());
+        loginDto.setPhoto(user.getPhoto());
         return loginDto;
     }
 
@@ -369,5 +371,18 @@ public class UserBean implements Serializable {
             loginDtos.add(convertUserEntitytoLoginDto(u));
         }
         return loginDtos;
+    }
+
+    private ArrayList<RoleDto> convertUsersFromEntityListToRoleDtoList
+            (ArrayList<UserEntity> userEntityEntities) {
+        ArrayList<RoleDto> roleDtos = new ArrayList<>();
+        for (UserEntity u : userEntityEntities) {
+            RoleDto roleDto = new RoleDto();
+            roleDto.setId(u.getId());
+            roleDto.setUsername(u.getUsername());
+            roleDto.setRole(u.getRole());
+            roleDtos.add(roleDto);
+        }
+        return roleDtos;
     }
 }

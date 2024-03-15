@@ -106,7 +106,7 @@ public class UserService {
         }
     }
 
-    // Get list of usernames (Login dto)
+    // Get list of usernames (Role dto)
     @GET
     @Path("/usernames")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -116,7 +116,7 @@ public class UserService {
             userBean.logout(token);
             return Response.status(401).entity("Invalid token").build();
         }
-        ArrayList<LoginDto> usernames = userBean.getAllUsernames();
+        ArrayList<RoleDto> usernames = userBean.getAllUsernames();
         return Response.status(200).entity(usernames).build();
     }
 
