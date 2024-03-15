@@ -183,6 +183,7 @@ public class TaskService {
     @PUT
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response updateTask(@HeaderParam("token") String token, TaskDto task) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
@@ -217,7 +218,8 @@ public class TaskService {
             return Response.status(400).entity("Category does not exist").build();
         }
         TaskDto updatedTask = taskBean.updateTask(token, task, category);
-        if (updatedTask !=null) {
+        System.out.println(updatedTask.getId());
+        if (updatedTask != null) {
             return Response.status(200).entity(updatedTask).build();
         } else {
             return Response.status(404).entity("Impossible to edit task. Verify all fields").build();

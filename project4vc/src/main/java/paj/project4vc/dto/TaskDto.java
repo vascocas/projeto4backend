@@ -1,5 +1,7 @@
 package paj.project4vc.dto;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import paj.project4vc.enums.TaskPriority;
 import paj.project4vc.enums.TaskState;
 import jakarta.xml.bind.annotation.XmlElement;
