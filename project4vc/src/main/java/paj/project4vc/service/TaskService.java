@@ -217,10 +217,9 @@ public class TaskService {
         if (category == null) {
             return Response.status(400).entity("Category does not exist").build();
         }
-        TaskDto updatedTask = taskBean.updateTask(token, task, category);
-        System.out.println(updatedTask.getId());
-        if (updatedTask != null) {
-            return Response.status(200).entity(updatedTask).build();
+        TaskDto returnTask = taskBean.updateTask(token, task, category);
+        if (returnTask != null) {
+            return Response.status(200).entity(returnTask).build();
         } else {
             return Response.status(404).entity("Impossible to edit task. Verify all fields").build();
         }
