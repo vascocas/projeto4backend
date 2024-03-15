@@ -199,7 +199,7 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response roleByToken(@HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
-            LoginDto userRole = userBean.getRole(token);
+            RoleDto userRole = userBean.getRole(token);
             return Response.status(200).entity(userRole).build();
         } else {
             userBean.logout(token);

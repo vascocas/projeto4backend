@@ -193,9 +193,9 @@ public class UserBean implements Serializable {
         return false;
     }
 
-    public LoginDto getRole(String token) {
+    public RoleDto getRole(String token) {
         UserEntity u = userDao.findUserByToken(token);
-        LoginDto dto = new LoginDto();
+        RoleDto dto = new RoleDto();
         if (u != null) {
             dto.setRole(u.getRole());
             return dto;
