@@ -67,7 +67,7 @@ public class TaskService {
 
     // Return all Tasks from user
     @GET
-    @Path("/all/{userId}")
+    @Path("/all/user/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUserTasks(@HeaderParam("token") String token, @PathParam("userId") int userId) {
         if (!userBean.tokenExist(token)) {
@@ -78,6 +78,22 @@ public class TaskService {
             return Response.status(200).entity(tasks).build();
         } else {
             return Response.status(404).entity("No tasks found for this user").build();
+        }
+    }
+
+    // Return all Tasks with same Category
+    @GET
+    @Path("/all/category/{categoryId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllCategoryTasks(@HeaderParam("token") String token, @PathParam("categoryId") int categoryId) {
+        if (!userBean.tokenExist(token)) {
+            return Response.status(401).entity("Invalid token").build();
+        }
+        ArrayList<TaskDto> tasks = taskBean.getCategoryTasks(token, categoryId);
+        if (tasks != null) {
+            return Response.status(200).entity(tasks).build();
+        } else {
+            return Response.status(404).entity("No category tasks found").build();
         }
     }
 
@@ -94,22 +110,6 @@ public class TaskService {
             return Response.status(200).entity(tasks).build();
         } else {
             return Response.status(404).entity("No deleted tasks found").build();
-        }
-    }
-
-    // Return all Tasks with same Category
-    @GET
-    @Path("/all/{categoryId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllCategoryTasks(@HeaderParam("token") String token, @PathParam("categoryId") int categoryId) {
-        if (!userBean.tokenExist(token)) {
-            return Response.status(401).entity("Invalid token").build();
-        }
-        ArrayList<TaskDto> tasks = taskBean.getCategoryTasks(token, categoryId);
-        if (tasks != null) {
-            return Response.status(200).entity(tasks).build();
-        } else {
-            return Response.status(404).entity("No category tasks found").build();
         }
     }
 
