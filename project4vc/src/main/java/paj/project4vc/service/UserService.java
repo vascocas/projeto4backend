@@ -83,7 +83,7 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response userById(@PathParam("id") int id, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
-            UserDto dto = userBean.userById(id, token);
+            UserDto dto = userBean.userById(id);
             return Response.status(200).entity(dto).build();
         } else {
             userBean.logout(token);
@@ -248,12 +248,12 @@ public class UserService {
 
     // Delete user by username (Recycle bin)
     @PUT
-    @Path("/delete/{username}")
+    @Path("/remove/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteUser(@HeaderParam("token") String token, @PathParam("username") String username) {
+    public Response deleteUser(@HeaderParam("token") String token, @PathParam("userId") int userId) {
         if (userBean.tokenExist(token)) {
-            if (userBean.deleteUser(token, username)) {
+            if (userBean.deleteUser(token, userId)) {
                 return Response.status(200).entity("Profile deleted").build();
             } else {
                 return Response.status(401).entity("Error").build();

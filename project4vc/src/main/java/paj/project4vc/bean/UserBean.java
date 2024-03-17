@@ -1,6 +1,6 @@
 package paj.project4vc.bean;
 
-import jakarta.xml.bind.annotation.XmlElement;
+
 import paj.project4vc.dao.TokenDao;
 import paj.project4vc.dao.UserDao;
 import paj.project4vc.dto.*;
@@ -14,11 +14,11 @@ import jakarta.ejb.Stateless;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
-
-import org.mindrot.jbcrypt.BCrypt;
 
 
 @Stateless
@@ -33,7 +33,7 @@ public class UserBean implements Serializable {
     @EJB
     PassEncoder passEncoder;
 
-    int tokenTimer = 10000000;
+    int tokenTimer = 1000000;
 
     public LoginDto login(String username, String password) {
         LoginDto returnedLogin = new LoginDto();
@@ -102,30 +102,27 @@ public class UserBean implements Serializable {
     public boolean tokenExist(String token) {
         UserEntity u = userDao.findUserByToken(token);
         TokenEntity t = tokenDao.findTokenByValue(token);
-        if (u != null && isTokenValid(t))
+        if (u != null && isTokenValid(t)) {
+            t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
             return true;
-        else {
+        } else {
             return false;
         }
     }
 
-    public UserDto userById(int id, String token) {
-        TokenEntity t = tokenDao.findTokenByValue(token);
+    public UserDto userById(int id) {
         UserEntity u = userDao.findUserById(id);
-        if (t != null && u != null) {
+        if (u != null) {
             UserDto dto = convertUserEntitytoUserDto(u);
-            t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
             return dto;
         } else return null;
     }
 
 
     public UserDto userByToken(String token) {
-        TokenEntity t = tokenDao.findTokenByValue(token);
         UserEntity u = userDao.findUserByToken(token);
-        if (t != null && u != null) {
+        if (u != null) {
             UserDto dto = convertUserEntitytoUserDto(u);
-            t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
             return dto;
         } else return null;
     }
@@ -138,10 +135,8 @@ public class UserBean implements Serializable {
             return null;
         }
         UserEntity u = userDao.findUserByUsername(username);
-        TokenEntity t = tokenDao.findTokenByValue(token);
-        if (u != null && t != null) {
+        if (u != null) {
             UserDto checkU = convertUserEntitytoUserDto(u);
-            t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
             return checkU;
         }
         return null;
@@ -159,8 +154,7 @@ public class UserBean implements Serializable {
             } else {
                 u = userDao.findUserById(user.getId());
             }
-            TokenEntity t = tokenDao.findTokenByValue(token);
-            if (u != null && t != null) {
+            if (u != null) {
                 // Encrypt the password before storing
                 String encryptedPassword = passEncoder.encode(user.getPassword());
                 u.setPassword(encryptedPassword);
@@ -169,7 +163,6 @@ public class UserBean implements Serializable {
                 u.setLastName(user.getLastName());
                 u.setPhone(user.getPhone());
                 u.setPhoto(user.getPhoto());
-                t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
             }
         }
     }
@@ -183,10 +176,8 @@ public class UserBean implements Serializable {
             //  return false;
             //}
             UserEntity u = userDao.findUserById(user.getId());
-            TokenEntity t = tokenDao.findTokenByValue(token);
             if (u != null) {
                 u.setRole(user.getRole());
-                t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
                 userDao.persist(u);
                 return true;
             }
@@ -226,11 +217,9 @@ public class UserBean implements Serializable {
                 // Check if a user with the provided email already exists
                 UserEntity userByEmail = userDao.findUserByEmail(user.getEmail());
                 if (userByEmail == null) {
-                    TokenEntity t = tokenDao.findTokenByValue(token);
                     UserEntity newUser = convertUserDtotoEntity(user);
                     newUser.setRole(user.getRole());
                     userDao.persist(newUser);
-                    t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
                     return convertUserEntitytoUserDto(newUser);
                 }
             }
@@ -246,14 +235,12 @@ public class UserBean implements Serializable {
             if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
                 return null;
             }
-            TokenEntity t = tokenDao.findTokenByValue(token);
             ArrayList<UserEntity> userList = userDao.findAllActiveUsers();
-            if (t != null && userList != null) {
+            if (userList != null) {
                 ArrayList<UserDto> users = convertUsersFromEntityListToUserDtoList(userList);
-                t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
                 return users;
-            } else return null;
-        } else return null;
+            }
+        } return null;
     }
 
     public ArrayList<UserDto> getDeletedUsers(String token) {
@@ -264,27 +251,23 @@ public class UserBean implements Serializable {
             if (userRole == UserRole.DEVELOPER) {
                 return null;
             }
-            TokenEntity t = tokenDao.findTokenByValue(token);
             ArrayList<UserEntity> userDeletedList = userDao.findAllDeletedUsers();
-            if (t != null && userDeletedList != null) {
+            if (userDeletedList != null) {
                 ArrayList<UserDto> deletedUsers = convertUsersFromEntityListToUserDtoList(userDeletedList);
-                t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
                 return deletedUsers;
-            } else return null;
-        } else return null;
+            }
+        } return null;
     }
 
-    public boolean deleteUser(String token, String username) {
+    public boolean deleteUser(String token, int userId) {
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
-            // Check if the user is a DEVELOPER or SCRUM_MASTER: cannot delete a user
+            // Check user role: DEVELOPER or SCRUM_MASTER cannot delete users
             if (userRole != UserRole.DEVELOPER && userRole != UserRole.SCRUM_MASTER) {
-                UserEntity u = userDao.findUserByUsername(username);
-                TokenEntity t = tokenDao.findTokenByValue(token);
-                if (t != null || u != null) {
+                UserEntity u = userDao.findUserById(userId);
+                if (u != null) {
                     u.setDeleted(true);
-                    t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
                     return true;
                 }
             }
@@ -296,25 +279,39 @@ public class UserBean implements Serializable {
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
-            // Check if the user is a DEVELOPER or SCRUM_MASTER: cannot delete an user
-            if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
-                return false;
-            }
-            TokenEntity t = tokenDao.findTokenByValue(token);
-            UserEntity u = userDao.findUserById(id);
-            if (t != null && u != null) {
-                for (TaskEntity task : u.getTasks()) {
-                    String title = task.getTitle();
-                    String newTitle = title + " This user was deleted";
-                    task.setTitle(newTitle);
-                    task.setCreator(null);
+            // Check user role: DEVELOPER or SCRUM_MASTER cannot remove users
+            if (userRole != UserRole.DEVELOPER && userRole != UserRole.SCRUM_MASTER) {
+                UserEntity u = userDao.findUserById(id);
+                if (u != null) {
+                    UserEntity delUser = userDao.findUserById(1);
+                    for (TaskEntity task : u.getTasks()) {
+                        String newTitle = task.getTitle() + " Creator deleted";
+                        task.setTitle(newTitle);
+                        task.setCreator(delUser);
+                    }
+                    userDao.remove(u);
+                    return true;
                 }
-                userDao.remove(u);
-                t.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
-                return true;
             }
         }
         return false;
+    }
+
+    private UserEntity createDeletedUser() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+        String formattedDateTime = currentDateTime.format(formatter);
+        UserEntity deletedUser = new UserEntity();
+        deletedUser.setUsername("del." + formattedDateTime);
+        deletedUser.setPassword("deleted");
+        deletedUser.setEmail("del." + formattedDateTime + "@del.mail.pt");
+        deletedUser.setFirstName("deleted");
+        deletedUser.setLastName("deleted");
+        deletedUser.setPhone("deleted");
+        deletedUser.setDeleted(true);
+        deletedUser.setRole(UserRole.PRODUCT_OWNER);
+        userDao.persist(deletedUser);
+        return deletedUser;
     }
 
     private UserEntity convertUserDtotoEntity(UserDto user) {

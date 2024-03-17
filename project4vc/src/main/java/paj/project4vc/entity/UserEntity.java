@@ -13,7 +13,7 @@ import paj.project4vc.enums.UserRole;
 @NamedQuery(name = "User.findUserByUsername", query = "SELECT u FROM UserEntity u WHERE u.username = :username AND u.deleted = false")
 @NamedQuery(name = "User.findUserByToken", query = "SELECT u FROM UserEntity u JOIN u.tokens t WHERE t.tokenValue = :token AND u.deleted = false")
 @NamedQuery(name = "User.findUserByEmail", query = "SELECT u FROM UserEntity u WHERE u.email = :email AND u.deleted = false")
-@NamedQuery(name = "User.findUserById", query = "SELECT u FROM UserEntity u WHERE u.id = :id AND u.deleted = false")
+@NamedQuery(name = "User.findUserById", query = "SELECT u FROM UserEntity u WHERE u.id = :id")
 @NamedQuery(name = "User.findAllActiveUsers", query = "SELECT u FROM UserEntity u WHERE u.deleted = false")
 @NamedQuery(name = "User.findAllDeletedUsers", query = "SELECT u FROM UserEntity u WHERE u.deleted = true")
 
