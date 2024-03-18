@@ -293,14 +293,14 @@ public class TaskService {
     @Path("/updateDeleted/userTasks")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAllUserTasks(@HeaderParam("token") String token, LoginDto username) {
+    public Response deleteAllUserTasks(@HeaderParam("token") String token, RoleDto user) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        if (taskBean.removeAllUserTasks(token, username)) {
+        if (taskBean.removeAllUserTasks(token, user)) {
             return Response.status(200).entity("Tasks deleted successfully").build();
         } else {
-            return Response.status(404).entity("Impossible to delete tasks.").build();
+            return Response.status(404).entity("No tasks found to delete.").build();
         }
     }
 

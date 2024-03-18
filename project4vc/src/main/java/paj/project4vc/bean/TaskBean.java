@@ -3,7 +3,7 @@ package paj.project4vc.bean;
 import paj.project4vc.dao.CategoryDao;
 import paj.project4vc.dao.TaskDao;
 import paj.project4vc.dao.UserDao;
-import paj.project4vc.dto.LoginDto;
+import paj.project4vc.dto.RoleDto;
 import paj.project4vc.dto.TaskDto;
 import paj.project4vc.dto.TaskStateDto;
 import paj.project4vc.entity.CategoryEntity;
@@ -13,6 +13,7 @@ import paj.project4vc.enums.TaskState;
 import paj.project4vc.enums.UserRole;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -74,14 +75,14 @@ public class TaskBean implements Serializable {
         return false;
     }
 
-    public boolean removeAllUserTasks(String token, LoginDto username) {
+    public boolean removeAllUserTasks(String token, RoleDto selectedUser) {
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
         if (user != null) {
             UserRole userRole = user.getRole();
             // Check if the user is a PRODUCT_OWNER
             if (userRole == UserRole.PRODUCT_OWNER) {
-                UserEntity userEntity = userDao.findUserByUsername(username.getUsername());
+                UserEntity userEntity = userDao.findUserById(selectedUser.getId());
                 if (userEntity != null) {
                     ArrayList<TaskEntity> tasks = taskDao.findTasksByUser(userEntity);
                     if (tasks != null) {
