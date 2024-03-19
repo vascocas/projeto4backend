@@ -142,7 +142,7 @@ public class UserBean implements Serializable {
         return null;
     }
 
-    public void editProfile(UserDto user, String token) {
+    public boolean editProfile(UserDto user, String token) {
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
             userEntity.setEmail(user.getEmail());
@@ -150,10 +150,12 @@ public class UserBean implements Serializable {
             userEntity.setLastName(user.getLastName());
             userEntity.setPhone(user.getPhone());
             userEntity.setPhoto(user.getPhoto());
+            return true;
         }
+        return false;
     }
 
-    public void editUsersProfile(UserDto user, String token) {
+    public boolean editUsersProfile(UserDto user, String token) {
         // Get user role by token
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
@@ -167,9 +169,46 @@ public class UserBean implements Serializable {
                     u.setLastName(user.getLastName());
                     u.setPhone(user.getPhone());
                     u.setPhoto(user.getPhoto());
+                    return true;
                 }
             }
         }
+        return false;
+    }
+
+    public boolean editUserPassword(String token, PasswordDto newPass) {
+        UserEntity userEntity = userDao.findUserByToken(token);
+        if (userEntity != null) {
+            // Retrieve the hashed password associated with the user
+            String hashedPassword = userEntity.getPassword();
+            if ((passEncoder.matches(newPass.getPassword(), hashedPassword)) && (newPass.getNewPass().equals(newPass.getConfirmPass()))) {
+                String encryptedPassword = passEncoder.encode(newPass.getNewPass());
+                userEntity.setPassword(encryptedPassword);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean editUsersPassword(String token, PasswordDto newPass) {
+        // Get user role by token
+        UserEntity userEntity = userDao.findUserByToken(token);
+        if (userEntity != null) {
+            UserRole userRole = userEntity.getRole();
+            // Check if the user is a DEVELOPER or SCRUM_MASTER: can only edit own profile
+            if (userRole != UserRole.DEVELOPER && userRole != UserRole.SCRUM_MASTER) {
+                UserEntity u = userDao.findUserById(newPass.getId());
+                if (u != null) {
+                    String hashedPassword = u.getPassword();
+                    if ((passEncoder.matches(newPass.getPassword(), hashedPassword)) && (newPass.getNewPass().equals(newPass.getConfirmPass()))) {
+                        String encryptedPassword = passEncoder.encode(newPass.getNewPass());
+                        u.setPassword(encryptedPassword);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public boolean updateRole(RoleDto user, String token) {

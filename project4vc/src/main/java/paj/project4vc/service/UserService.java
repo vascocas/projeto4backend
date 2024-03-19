@@ -169,7 +169,6 @@ public class UserService {
     @PUT
     @Path("/profile")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response editProfile(@HeaderParam("token") String token, UserDto user) {
         if (userBean.tokenExist(token)) {
             if (user.getEmail() == null || user.getEmail().isEmpty()) {
@@ -184,19 +183,21 @@ public class UserService {
             if (user.getPhone() == null || user.getPhone().isEmpty()) {
                 return Response.status(401).entity("Phone cannot be empty").build();
             }
-            userBean.editProfile(user, token);
-            return Response.status(200).entity("Profile updated!").build();
+            if (userBean.editProfile(user, token)) {
+                return Response.status(200).entity("Profile updated!").build();
+            } else {
+                return Response.status(401).entity("Fail updating profile").build();
+            }
         } else {
             userBean.logout(token);
-            return Response.status(401).entity("Invalid Token!").build();
+            return Response.status(403).entity("Invalid Token!").build();
         }
     }
 
-    // Edit user profile
+    // Edit different user profile
     @PUT
     @Path("/othersProfile")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response editOthersProfile(@HeaderParam("token") String token, UserDto user) {
         if (userBean.tokenExist(token)) {
             if (user.getEmail() == null || user.getEmail().isEmpty()) {
@@ -211,8 +212,57 @@ public class UserService {
             if (user.getPhone() == null || user.getPhone().isEmpty()) {
                 return Response.status(401).entity("Phone cannot be empty").build();
             }
-            userBean.editUsersProfile(user, token);
-            return Response.status(200).entity("Profile updated!").build();
+            if (userBean.editUsersProfile(user, token)) {
+                return Response.status(200).entity("Profile updated!").build();
+            } else {
+                return Response.status(401).entity("Fail updating profile").build();
+            }
+        } else {
+            userBean.logout(token);
+            return Response.status(401).entity("Invalid Token!").build();
+        }
+    }
+
+    // Edit user password
+    @PUT
+    @Path("/password")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response editPassword(@HeaderParam("token") String token, PasswordDto newPassword) {
+        if (userBean.tokenExist(token)) {
+            if (newPassword.getNewPass() == null || newPassword.getNewPass().isEmpty()) {
+                return Response.status(401).entity("Password cannot be empty").build();
+            }
+            if (newPassword.getConfirmPass() == null || newPassword.getConfirmPass().isEmpty()) {
+                return Response.status(401).entity("Password cannot be empty").build();
+            }
+            if (userBean.editUserPassword(token, newPassword)) {
+                return Response.status(200).entity("Password updated!").build();
+            } else {
+                return Response.status(401).entity("Fail updating password").build();
+            }
+        } else {
+            userBean.logout(token);
+            return Response.status(401).entity("Invalid Token!").build();
+        }
+    }
+
+    // Edit different user password
+    @PUT
+    @Path("/othersPassword")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response editOthersPassword(@HeaderParam("token") String token, PasswordDto newPassword) {
+        if (userBean.tokenExist(token)) {
+            if (newPassword.getNewPass() == null || newPassword.getNewPass().isEmpty()) {
+                return Response.status(401).entity("Password cannot be empty").build();
+            }
+            if (newPassword.getConfirmPass() == null || newPassword.getConfirmPass().isEmpty()) {
+                return Response.status(401).entity("Password cannot be empty").build();
+            }
+            if (userBean.editUsersPassword(token, newPassword)) {
+                return Response.status(200).entity("Password updated!").build();
+            } else {
+                return Response.status(401).entity("Fail updating password").build();
+            }
         } else {
             userBean.logout(token);
             return Response.status(401).entity("Invalid Token!").build();
