@@ -252,15 +252,11 @@ public class UserBean implements Serializable {
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
             // Check if the user is a DEVELOPER or SCRUM_MASTER: cannot create user
-            if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
-                return null;
-            }
-            // Check if a user with the provided username already exists
-            UserEntity userByUsername = userDao.findUserByUsername(user.getUsername());
-            if (userByUsername == null) {
-                // Check if a user with the provided email already exists
+            if (userRole != UserRole.DEVELOPER && userRole != UserRole.SCRUM_MASTER) {
+                // Check if a user with the provided username and email already exists
+                UserEntity userByUsername = userDao.findUserByUsername(user.getUsername());
                 UserEntity userByEmail = userDao.findUserByEmail(user.getEmail());
-                if (userByEmail == null) {
+                if ((userByUsername == null) && (userByEmail == null)) {
                     UserEntity newUser = convertUserDtotoEntity(user);
                     newUser.setRole(user.getRole());
                     userDao.persist(newUser);
@@ -370,7 +366,11 @@ public class UserBean implements Serializable {
         userEntity.setFirstName(user.getFirstName());
         userEntity.setLastName(user.getLastName());
         userEntity.setPhone(user.getPhone());
-        userEntity.setPhoto(user.getPhoto());
+        if (user.getPhoto().isEmpty()) {
+            userEntity.setPhoto("https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659651_640.png");
+        } else {
+            userEntity.setPhoto(user.getPhoto());
+        }
         userEntity.setDeleted(false);
         return userEntity;
     }
