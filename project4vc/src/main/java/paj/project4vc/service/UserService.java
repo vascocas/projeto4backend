@@ -39,22 +39,22 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response registerUser(UserDto user) {
         // Validate the UserDto inputs
-        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+        if (user.getUsername() == null) {
             return Response.status(401).entity("Username cannot be empty").build();
         }
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+        if (user.getPassword() == null) {
             return Response.status(401).entity("Password cannot be empty").build();
         }
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+        if (user.getEmail() == null) {
             return Response.status(401).entity("Email cannot be empty").build();
         }
-        if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
+        if (user.getFirstName() == null) {
             return Response.status(401).entity("First name cannot be empty").build();
         }
-        if (user.getLastName() == null || user.getLastName().isEmpty()) {
+        if (user.getLastName() == null) {
             return Response.status(401).entity("Last name cannot be empty").build();
         }
-        if (user.getPhone() == null || user.getPhone().isEmpty()) {
+        if (user.getPhone() == null) {
             return Response.status(401).entity("Phone cannot be empty").build();
         }
         // Proceed with registering the user
