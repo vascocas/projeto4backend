@@ -143,26 +143,31 @@ public class UserBean implements Serializable {
     }
 
     public void editProfile(UserDto user, String token) {
-        UserEntity u;
+        UserEntity userEntity = userDao.findUserByToken(token);
+        if (userEntity != null) {
+            userEntity.setEmail(user.getEmail());
+            userEntity.setFirstName(user.getFirstName());
+            userEntity.setLastName(user.getLastName());
+            userEntity.setPhone(user.getPhone());
+            userEntity.setPhoto(user.getPhoto());
+        }
+    }
+
+    public void editUsersProfile(UserDto user, String token) {
         // Get user role by token
         UserEntity userEntity = userDao.findUserByToken(token);
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
             // Check if the user is a DEVELOPER or SCRUM_MASTER: can only edit own profile
-            if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
-                u = userEntity;
-            } else {
-                u = userDao.findUserById(user.getId());
-            }
-            if (u != null) {
-                // Encrypt the password before storing
-                String encryptedPassword = passEncoder.encode(user.getPassword());
-                u.setPassword(encryptedPassword);
-                u.setEmail(user.getEmail());
-                u.setFirstName(user.getFirstName());
-                u.setLastName(user.getLastName());
-                u.setPhone(user.getPhone());
-                u.setPhoto(user.getPhoto());
+            if (userRole != UserRole.DEVELOPER && userRole != UserRole.SCRUM_MASTER) {
+                UserEntity u = userDao.findUserById(user.getId());
+                if (u != null) {
+                    u.setEmail(user.getEmail());
+                    u.setFirstName(user.getFirstName());
+                    u.setLastName(user.getLastName());
+                    u.setPhone(user.getPhone());
+                    u.setPhoto(user.getPhoto());
+                }
             }
         }
     }
@@ -240,7 +245,8 @@ public class UserBean implements Serializable {
                 ArrayList<UserDto> users = convertUsersFromEntityListToUserDtoList(userList);
                 return users;
             }
-        } return null;
+        }
+        return null;
     }
 
     public ArrayList<UserDto> getDeletedUsers(String token) {
@@ -256,7 +262,8 @@ public class UserBean implements Serializable {
                 ArrayList<UserDto> deletedUsers = convertUsersFromEntityListToUserDtoList(userDeletedList);
                 return deletedUsers;
             }
-        } return null;
+        }
+        return null;
     }
 
     public boolean deleteUser(String token, int userId) {
@@ -285,7 +292,7 @@ public class UserBean implements Serializable {
                 if (u != null) {
                     UserEntity delUser = userDao.findUserById(1);
                     for (TaskEntity task : u.getTasks()) {
-                        String newTitle = task.getTitle() + " Creator deleted";
+                        String newTitle = task.getTitle() + ": Creator deleted";
                         task.setTitle(newTitle);
                         task.setCreator(delUser);
                     }

@@ -192,6 +192,33 @@ public class UserService {
         }
     }
 
+    // Edit user profile
+    @PUT
+    @Path("/othersProfile")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response editOthersProfile(@HeaderParam("token") String token, UserDto user) {
+        if (userBean.tokenExist(token)) {
+            if (user.getEmail() == null || user.getEmail().isEmpty()) {
+                return Response.status(401).entity("Email cannot be empty").build();
+            }
+            if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
+                return Response.status(401).entity("First name cannot be empty").build();
+            }
+            if (user.getLastName() == null || user.getLastName().isEmpty()) {
+                return Response.status(401).entity("Last name cannot be empty").build();
+            }
+            if (user.getPhone() == null || user.getPhone().isEmpty()) {
+                return Response.status(401).entity("Phone cannot be empty").build();
+            }
+            userBean.editUsersProfile(user, token);
+            return Response.status(200).entity("Profile updated!").build();
+        } else {
+            userBean.logout(token);
+            return Response.status(401).entity("Invalid Token!").build();
+        }
+    }
+
     // Get role of logged user
     @GET
     @Path("/role")
