@@ -77,10 +77,10 @@ public class UserService {
 
     // Get user by Id
     @GET
-    @Path("/user/{id}")
+    @Path("/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response userById(@PathParam("id") int id, @HeaderParam("token") String token) {
+    public Response userById(@PathParam("userId") int id, @HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
             UserDto dto = userBean.userById(id);
             return Response.status(200).entity(dto).build();
@@ -92,7 +92,7 @@ public class UserService {
 
     // Get logged user
     @GET
-    @Path("/user")
+    @Path("/loggedUser")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response userByToken(@HeaderParam("token") String token) {

@@ -36,17 +36,17 @@ public class CategoryBean implements Serializable {
             ArrayList<CategoryDto> ctgDtos = convertCategoriesFromEntityListToDtoList(categories);
             return ctgDtos;
         } else {
-            return null;
+            return new ArrayList<>();
         }
     }
 
-    public CategoryDto getCategorybyId(int id) {
+    public CategoryDto getCategoryById(int id) {
         CategoryEntity category = categoryDao.findCategoryById(id);
         if (category != null) {
             CategoryDto ctgDto = convertCategoryFromEntityToDto(category);
             return ctgDto;
         } else {
-            return null;
+            return new CategoryDto();
         }
     }
 
@@ -67,22 +67,20 @@ public class CategoryBean implements Serializable {
         return false;
     }
 
-    public boolean removeCategory(String token, CategoryDto category) {
+    public boolean removeCategory(String token, int categoryId) {
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
         UserRole userRole = user.getRole();
         // Check if the user is a PRODUCT_OWNER
         if (userRole == UserRole.PRODUCT_OWNER) {
-            CategoryEntity c = categoryDao.findCategoryById(category.getId());
+            CategoryEntity c = categoryDao.findCategoryById(categoryId);
             if (c != null) {
-                ArrayList<TaskEntity> tasks = taskDao.findTasksByCategoryId(category.getId());
+                ArrayList<TaskEntity> tasks = taskDao.findTasksByCategoryId(categoryId);
                 if (tasks == null || tasks.isEmpty()) {
                     categoryDao.remove(c);
                     return true;
                 }
             }
-        } else {
-            return false;
         }
         return false;
     }

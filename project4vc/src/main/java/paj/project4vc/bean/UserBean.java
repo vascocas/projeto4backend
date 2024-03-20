@@ -73,14 +73,10 @@ public class UserBean implements Serializable {
     }
 
     public boolean register(UserDto user) {
-        // Check if a user with the provided username already exists
+        // Check if a user with the provided username and email already exists
         UserEntity userByUsername = userDao.findUserByUsername(user.getUsername());
-        if (userByUsername != null) {
-            return false;
-        }
-        // Check if a user with the provided email already exists
         UserEntity userByEmail = userDao.findUserByEmail(user.getEmail());
-        if (userByEmail != null) {
+        if ((userByUsername != null) && (userByEmail != null)) {
             return false;
         }
         UserEntity newUser = convertUserDtotoEntity(user);
@@ -115,7 +111,7 @@ public class UserBean implements Serializable {
         if (u != null) {
             UserDto dto = convertUserEntitytoUserDto(u);
             return dto;
-        } else return null;
+        } else return new UserDto();
     }
 
 
@@ -124,22 +120,21 @@ public class UserBean implements Serializable {
         if (u != null) {
             UserDto dto = convertUserEntitytoUserDto(u);
             return dto;
-        } else return null;
+        } else return new UserDto();
     }
 
     public UserDto getProfile(String username, String token) {
         UserEntity userEntity = userDao.findUserByToken(token);
         UserRole userRole = userEntity.getRole();
         // Check if the user is a DEVELOPER: can only get own profile
-        if (userRole == UserRole.DEVELOPER) {
-            return null;
+        if (userRole != UserRole.DEVELOPER) {
+            UserEntity u = userDao.findUserByUsername(username);
+            if (u != null) {
+                UserDto checkedUser = convertUserEntitytoUserDto(u);
+                return checkedUser;
+            }
         }
-        UserEntity u = userDao.findUserByUsername(username);
-        if (u != null) {
-            UserDto checkU = convertUserEntitytoUserDto(u);
-            return checkU;
-        }
-        return null;
+        return new UserDto();
     }
 
     public boolean editProfile(UserDto user, String token) {
@@ -235,7 +230,7 @@ public class UserBean implements Serializable {
         if (u != null) {
             dto.setRole(u.getRole());
             return dto;
-        } else return null;
+        } else return new RoleDto();
     }
 
     public ArrayList<RoleDto> getAllUsernames() {
@@ -243,7 +238,7 @@ public class UserBean implements Serializable {
         if (users != null && !users.isEmpty()) {
             return convertUsersFromEntityListToRoleDtoList(users);
         } else {
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -281,7 +276,7 @@ public class UserBean implements Serializable {
                 return users;
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public ArrayList<UserDto> getDeletedUsers(String token) {
@@ -298,7 +293,7 @@ public class UserBean implements Serializable {
                 return deletedUsers;
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public boolean deleteUser(String token, int userId) {
@@ -325,11 +320,8 @@ public class UserBean implements Serializable {
             if (userRole != UserRole.DEVELOPER && userRole != UserRole.SCRUM_MASTER) {
                 UserEntity u = userDao.findUserById(id);
                 if (u != null) {
-                    UserEntity delUser = userDao.findUserById(1);
                     for (TaskEntity task : u.getTasks()) {
-                        String newTitle = task.getTitle() + ": Creator deleted";
-                        task.setTitle(newTitle);
-                        task.setCreator(delUser);
+                        task.setCreator(null);
                     }
                     userDao.remove(u);
                     return true;
@@ -337,23 +329,6 @@ public class UserBean implements Serializable {
             }
         }
         return false;
-    }
-
-    private UserEntity createDeletedUser() {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-        String formattedDateTime = currentDateTime.format(formatter);
-        UserEntity deletedUser = new UserEntity();
-        deletedUser.setUsername("del." + formattedDateTime);
-        deletedUser.setPassword("deleted");
-        deletedUser.setEmail("del." + formattedDateTime + "@del.mail.pt");
-        deletedUser.setFirstName("deleted");
-        deletedUser.setLastName("deleted");
-        deletedUser.setPhone("deleted");
-        deletedUser.setDeleted(true);
-        deletedUser.setRole(UserRole.PRODUCT_OWNER);
-        userDao.persist(deletedUser);
-        return deletedUser;
     }
 
     private UserEntity convertUserDtotoEntity(UserDto user) {

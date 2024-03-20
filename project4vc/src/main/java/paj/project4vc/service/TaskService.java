@@ -41,19 +41,15 @@ public class TaskService {
             return Response.status(401).entity("Invalid token").build();
         } else {
             ArrayList<TaskDto> taskDtos = taskBean.getAllTasks();
-            if (taskDtos != null) {
-                return Response.status(200).entity(taskDtos).build();
-            } else {
-                return Response.status(404).entity("No tasks found").build();
-            }
+            return Response.status(200).entity(taskDtos).build();
         }
     }
 
     // Return Task by Id
     @GET
-    @Path("/{taskId}")
+    @Path("/task")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllUsersTasks(@HeaderParam("token") String token, @PathParam("taskId") int taskId) {
+    public Response getAllUsersTasks(@HeaderParam("token") String token, @QueryParam("taskId") int taskId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
@@ -67,9 +63,9 @@ public class TaskService {
 
     // Return all Tasks from user
     @GET
-    @Path("/all/user/{userId}")
+    @Path("/all/user")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllUserTasks(@HeaderParam("token") String token, @PathParam("userId") int userId) {
+    public Response getAllUserTasks(@HeaderParam("token") String token, @QueryParam("userId") int userId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
@@ -83,9 +79,9 @@ public class TaskService {
 
     // Return all Tasks with same Category
     @GET
-    @Path("/all/category/{categoryId}")
+    @Path("/all/category")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllCategoryTasks(@HeaderParam("token") String token, @PathParam("categoryId") int categoryId) {
+    public Response getAllCategoryTasks(@HeaderParam("token") String token, @QueryParam("categoryId") int categoryId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
@@ -106,11 +102,7 @@ public class TaskService {
             return Response.status(401).entity("Invalid token").build();
         }
         ArrayList<TaskDto> tasks = taskBean.getDeletedTasks(token);
-        if (tasks != null) {
-            return Response.status(200).entity(tasks).build();
-        } else {
-            return Response.status(404).entity("No deleted tasks found").build();
-        }
+        return Response.status(200).entity(tasks).build();
     }
 
     // Method to check if the provided priority is valid
@@ -172,7 +164,7 @@ public class TaskService {
             return Response.status(400).entity("Category does not exist").build();
         }
         TaskDto newTask = taskBean.addTask(token, task);
-        if (newTask !=null) {
+        if (newTask != null) {
             return Response.status(200).entity(newTask).build();
         } else {
             return Response.status(404).entity("Impossible to create task. Verify all fields").build();
@@ -246,9 +238,9 @@ public class TaskService {
 
     // Remove Task (Recycle bin)
     @PUT
-    @Path("/updateDeleted")
+    @Path("/updateDeleted/{taskId}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateDeleted(@HeaderParam("token") String token, @HeaderParam("taskId") int taskId) {
+    public Response updateDeleted(@HeaderParam("token") String token, @PathParam("taskId") int taskId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
@@ -261,9 +253,9 @@ public class TaskService {
 
     // Restore Task from Recycle bin
     @PUT
-    @Path("/restoreDeleted")
+    @Path("/restoreDeleted/{taskId}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateRestoreTask(@HeaderParam("token") String token, @HeaderParam("taskId") int taskId) {
+    public Response updateRestoreTask(@HeaderParam("token") String token, @PathParam("taskId") int taskId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
@@ -290,14 +282,14 @@ public class TaskService {
 
     // Remove all Tasks from user (Recycle bin)
     @PUT
-    @Path("/updateDeleted/userTasks")
+    @Path("/updateDeleted/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAllUserTasks(@HeaderParam("token") String token, RoleDto user) {
+    public Response deleteAllUserTasks(@HeaderParam("token") String token, @PathParam("userId") int userId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        if (taskBean.removeAllUserTasks(token, user)) {
+        if (taskBean.removeAllUserTasks(token, userId)) {
             return Response.status(200).entity("Tasks deleted successfully").build();
         } else {
             return Response.status(404).entity("No tasks found to delete.").build();
@@ -343,11 +335,11 @@ public class TaskService {
     @DELETE
     @Path("/category")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response removeCategory(@HeaderParam("token") String token, CategoryDto category) {
+    public Response removeCategory(@HeaderParam("token") String token, @QueryParam("categoryId") int categoryId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
-        if (ctgBean.removeCategory(token, category)) {
+        if (ctgBean.removeCategory(token, categoryId)) {
             return Response.status(200).entity("Task category removed successfully").build();
         } else {
             return Response.status(404).entity("Impossible to remove task category.").build();

@@ -75,14 +75,14 @@ public class TaskBean implements Serializable {
         return false;
     }
 
-    public boolean removeAllUserTasks(String token, RoleDto selectedUser) {
+    public boolean removeAllUserTasks(String token, int userId) {
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
         if (user != null) {
             UserRole userRole = user.getRole();
             // Check if the user is a PRODUCT_OWNER
             if (userRole == UserRole.PRODUCT_OWNER) {
-                UserEntity userEntity = userDao.findUserById(selectedUser.getId());
+                UserEntity userEntity = userDao.findUserById(userId);
                 if (userEntity != null) {
                     ArrayList<TaskEntity> tasks = taskDao.findTasksByUser(userEntity);
                     if (tasks != null) {
@@ -135,16 +135,15 @@ public class TaskBean implements Serializable {
         TaskEntity t = taskDao.findTaskById(id);
         if (t != null) {
             return convertTaskFromEntityToDto(t);
-        } else return null;
+        } else return new TaskDto();
     }
 
     public ArrayList<TaskDto> getAllTasks() {
         ArrayList<TaskEntity> tasks = taskDao.findAllActiveTasks();
         if (tasks != null && !tasks.isEmpty()) {
-            ArrayList<TaskDto> taskDtos = convertTasksFromEntityListToDtoList(tasks);
-            return taskDtos;
+            return convertTasksFromEntityListToDtoList(tasks);
         } else {
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -164,7 +163,7 @@ public class TaskBean implements Serializable {
                 }
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public ArrayList<TaskDto> getDeletedTasks(String token) {
@@ -181,7 +180,7 @@ public class TaskBean implements Serializable {
                 }
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public ArrayList<TaskDto> getCategoryTasks(String token, int categoryId) {
@@ -201,7 +200,7 @@ public class TaskBean implements Serializable {
                 }
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public TaskDto updateTask(String token, TaskDto taskDto, CategoryEntity taskCategory) {
