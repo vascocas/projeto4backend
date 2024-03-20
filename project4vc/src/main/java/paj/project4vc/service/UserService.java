@@ -38,24 +38,23 @@ public class UserService {
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response registerUser(UserDto user) {
-        // Validate the UserDto inputs
-        if (user.getUsername() == null) {
-            return Response.status(401).entity("Username cannot be empty").build();
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            return Response.status(400).entity("Username cannot be empty").build();
         }
-        if (user.getPassword() == null) {
-            return Response.status(401).entity("Password cannot be empty").build();
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            return Response.status(400).entity("Password cannot be empty").build();
         }
-        if (user.getEmail() == null) {
-            return Response.status(401).entity("Email cannot be empty").build();
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            return Response.status(400).entity("Email cannot be empty").build();
         }
-        if (user.getFirstName() == null) {
-            return Response.status(401).entity("First name cannot be empty").build();
+        if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
+            return Response.status(400).entity("First name cannot be empty").build();
         }
-        if (user.getLastName() == null) {
-            return Response.status(401).entity("Last name cannot be empty").build();
+        if (user.getLastName() == null || user.getLastName().isEmpty()) {
+            return Response.status(400).entity("Last name cannot be empty").build();
         }
-        if (user.getPhone() == null) {
-            return Response.status(401).entity("Phone cannot be empty").build();
+        if (user.getPhone() == null || user.getPhone().isEmpty()) {
+            return Response.status(400).entity("Phone cannot be empty").build();
         }
         // Proceed with registering the user
         if (userBean.register(user)) {
