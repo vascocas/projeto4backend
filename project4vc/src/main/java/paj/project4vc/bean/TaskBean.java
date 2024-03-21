@@ -249,7 +249,12 @@ public class TaskBean implements Serializable {
         taskDto.setPriority(t.getPriority());
         taskDto.setDeleted(t.isDeleted());
         taskDto.setCategory(t.getCategory().getCategoryName());
-        taskDto.setCreator(t.getCreator().getUsername());
+        if(t.getCreator()==null){
+            taskDto.setCreator(null);
+        }
+        else {
+            taskDto.setCreator(t.getCreator().getUsername());
+        }
         return taskDto;
     }
 
