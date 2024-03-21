@@ -121,13 +121,17 @@ public class UserService {
 
     // Get list of active users (User dto)
     @GET
-    @Path("/")
+    @Path("")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers(@HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
             ArrayList<UserDto> users = userBean.getAllUsers(token);
-            return Response.status(200).entity(users).build();
+            if (users != null) {
+                return Response.status(200).entity(users).build();
+            } else {
+                return Response.status(403).entity("Unauthorized").build();
+            }
         } else {
             userBean.logout(token);
             return Response.status(401).entity("Invalid Token!").build();
@@ -142,7 +146,11 @@ public class UserService {
     public Response getAllDeletedUsers(@HeaderParam("token") String token) {
         if (userBean.tokenExist(token)) {
             ArrayList<UserDto> users = userBean.getDeletedUsers(token);
-            return Response.status(200).entity(users).build();
+            if (users != null) {
+                return Response.status(200).entity(users).build();
+            } else {
+                return Response.status(403).entity("Unauthorized").build();
+            }
         } else {
             userBean.logout(token);
             return Response.status(401).entity("Invalid Token!").build();
@@ -156,8 +164,12 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProfile(@HeaderParam("token") String token, @PathParam("username") String username) {
         if (userBean.tokenExist(token)) {
-            UserDto u = userBean.getProfile(username, token);
-            return Response.status(200).entity(u).build();
+            UserDto user = userBean.getProfile(username, token);
+            if (user != null) {
+                return Response.status(200).entity(user).build();
+            } else {
+                return Response.status(403).entity("Unauthorized").build();
+            }
         } else {
             userBean.logout(token);
             return Response.status(401).entity("Invalid Token!").build();
@@ -318,7 +330,7 @@ public class UserService {
             UserDto newUser = userBean.createUser(token, user);
             if (newUser != null) {
                 return Response.status(200).entity(newUser).build();
-            } else return Response.status(401).entity("Error").build();
+            } else return Response.status(403).entity("Unauthorized").build();
         }
     }
 
@@ -332,7 +344,7 @@ public class UserService {
             if (userBean.deleteUser(token, userId)) {
                 return Response.status(200).entity("Profile deleted").build();
             } else {
-                return Response.status(401).entity("Error").build();
+                return Response.status(403).entity("Unauthorized").build();
             }
         } else {
             userBean.logout(token);
@@ -349,7 +361,7 @@ public class UserService {
             if (userBean.updateRole(user, token)) {
                 return Response.status(200).entity("Role updated").build();
             } else {
-                return Response.status(401).entity("Error").build();
+                return Response.status(403).entity("Unauthorized").build();
             }
         } else {
             userBean.logout(token);
@@ -366,7 +378,7 @@ public class UserService {
             if (userBean.removeUser(userId, token)) {
                 return Response.status(200).entity("Profile removed").build();
             } else {
-                return Response.status(401).entity("Error").build();
+                return Response.status(403).entity("Unauthorized").build();
             }
         } else {
             userBean.logout(token);

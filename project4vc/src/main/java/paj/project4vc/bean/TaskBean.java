@@ -163,7 +163,7 @@ public class TaskBean implements Serializable {
                 }
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     public ArrayList<TaskDto> getDeletedTasks(String token) {
@@ -180,7 +180,7 @@ public class TaskBean implements Serializable {
                 }
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     public ArrayList<TaskDto> getCategoryTasks(String token, int categoryId) {
@@ -200,7 +200,7 @@ public class TaskBean implements Serializable {
                 }
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     public TaskDto updateTask(String token, TaskDto taskDto, CategoryEntity taskCategory) {

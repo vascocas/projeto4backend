@@ -134,7 +134,7 @@ public class UserBean implements Serializable {
                 return checkedUser;
             }
         }
-        return new UserDto();
+        return null;
     }
 
     public boolean editProfile(UserDto user, String token) {
@@ -276,7 +276,7 @@ public class UserBean implements Serializable {
                 return users;
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     public ArrayList<UserDto> getDeletedUsers(String token) {
@@ -293,7 +293,7 @@ public class UserBean implements Serializable {
                 return deletedUsers;
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     public boolean deleteUser(String token, int userId) {

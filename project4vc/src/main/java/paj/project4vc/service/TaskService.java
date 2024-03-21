@@ -34,7 +34,7 @@ public class TaskService {
 
     // Return all Tasks
     @GET
-    @Path("/all")
+    @Path("")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTasks(@HeaderParam("token") String token) {
         if (!userBean.tokenExist(token)) {
@@ -59,33 +59,33 @@ public class TaskService {
 
     // Return all Tasks from user
     @GET
-    @Path("/all/user")
+    @Path("/user")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUserTasks(@HeaderParam("token") String token, @QueryParam("userId") int userId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
         ArrayList<TaskDto> tasks = taskBean.getUserTasks(token, userId);
-        if (tasks.isEmpty()) {
+        if (tasks != null) {
             return Response.status(200).entity(tasks).build();
         } else {
-            return Response.status(404).entity("No tasks found for this user").build();
+            return Response.status(403).entity("Unauthorized").build();
         }
     }
 
     // Return all Tasks with same Category
     @GET
-    @Path("/all/category")
+    @Path("/category")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllCategoryTasks(@HeaderParam("token") String token, @QueryParam("categoryId") int categoryId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
         ArrayList<TaskDto> tasks = taskBean.getCategoryTasks(token, categoryId);
-        if (!tasks.isEmpty()) {
+        if (tasks != null) {
             return Response.status(200).entity(tasks).build();
         } else {
-            return Response.status(404).entity("No category tasks found").build();
+            return Response.status(403).entity("Unauthorized").build();
         }
     }
 
@@ -98,7 +98,11 @@ public class TaskService {
             return Response.status(401).entity("Invalid token").build();
         }
         ArrayList<TaskDto> tasks = taskBean.getDeletedTasks(token);
-        return Response.status(200).entity(tasks).build();
+        if (tasks != null) {
+            return Response.status(200).entity(tasks).build();
+        } else {
+            return Response.status(403).entity("Unauthorized").build();
+        }
     }
 
     // Method to check if the provided priority is valid
@@ -123,7 +127,7 @@ public class TaskService {
 
     // Add Task
     @POST
-    @Path("/")
+    @Path("")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addTask(@HeaderParam("token") String token, TaskDto task) {
@@ -285,7 +289,7 @@ public class TaskService {
         if (taskBean.removeAllUserTasks(token, userId)) {
             return Response.status(200).entity("Tasks deleted successfully").build();
         } else {
-            return Response.status(404).entity("No tasks found to delete.").build();
+            return Response.status(403).entity("Unauthorized.").build();
         }
     }
 
@@ -298,11 +302,7 @@ public class TaskService {
             return Response.status(401).entity("Invalid token").build();
         }
         ArrayList<CategoryDto> categories = ctgBean.getAllCategories();
-        if (categories != null) {
-            return Response.status(200).entity(categories).build();
-        } else {
-            return Response.status(404).entity("No task categories found").build();
-        }
+        return Response.status(200).entity(categories).build();
     }
 
     // Add Task Category
@@ -320,7 +320,7 @@ public class TaskService {
         if (ctgBean.addCategory(token, category)) {
             return Response.status(200).entity("Task category added successfully").build();
         } else {
-            return Response.status(404).entity("Impossible to add task category.").build();
+            return Response.status(403).entity("Unauthorized").build();
         }
     }
 
@@ -335,7 +335,7 @@ public class TaskService {
         if (ctgBean.removeCategory(token, categoryId)) {
             return Response.status(200).entity("Task category removed successfully").build();
         } else {
-            return Response.status(404).entity("Impossible to remove task category.").build();
+            return Response.status(403).entity("Unauthorized").build();
         }
     }
 
@@ -353,7 +353,7 @@ public class TaskService {
         if (ctgBean.updateCategoryName(token, category)) {
             return Response.status(200).entity("Task category updated successfully").build();
         } else {
-            return Response.status(404).entity("Impossible to update task category.").build();
+            return Response.status(403).entity("Unauthorized").build();
         }
     }
 }
