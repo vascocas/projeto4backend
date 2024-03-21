@@ -33,11 +33,13 @@ public class TaskDto {
     private boolean deleted;
     @XmlElement
     private String category;
+    @XmlElement
+    private String creator;
 
     public TaskDto() {
     }
 
-    public TaskDto(int id, String title, String description, TaskState state, TaskPriority priority, LocalDate startDate, LocalDate endDate, boolean deleted, String category) {
+    public TaskDto(int id, String title, String description, TaskState state, TaskPriority priority, LocalDate startDate, LocalDate endDate, boolean deleted, String category, String creator) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -47,6 +49,7 @@ public class TaskDto {
         this.endDate = endDate;
         this.deleted = deleted;
         this.category = category;
+        this.creator = creator;
     }
 
     public int getId() {
@@ -119,5 +122,13 @@ public class TaskDto {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }

@@ -282,10 +282,10 @@ public class TaskService {
 
     // Remove all Tasks from user (Recycle bin)
     @PUT
-    @Path("/updateDeleted/{userId}")
+    @Path("/updateDeleted")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAllUserTasks(@HeaderParam("token") String token, @PathParam("userId") int userId) {
+    public Response deleteAllUserTasks(@HeaderParam("token") String token, @QueryParam("userId") int userId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }

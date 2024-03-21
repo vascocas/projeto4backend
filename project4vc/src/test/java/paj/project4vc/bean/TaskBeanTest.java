@@ -163,7 +163,7 @@ class TaskBeanTest {
         LocalDate endDate = LocalDate.of(2024, 3, 31);
 
         TaskDto testDto = new TaskDto(8, "Task_test", "Description for Task", TaskState.TODO, TaskPriority.MEDIUM_PRIORITY,
-                startDate, endDate, false, "Frontend");
+                startDate, endDate, false, "Frontend", "sad");
 
         //assertTrue(taskBean.addTask("token_id", testDto));
         ArgumentCaptor<TaskEntity> taskEntityCaptor = ArgumentCaptor.forClass(TaskEntity.class);
@@ -194,7 +194,7 @@ class TaskBeanTest {
         LocalDate endDate = LocalDate.of(2024, 3, 31);
         // Tests
         TaskDto taskDto = new TaskDto(1, "UpdatedTask", "Updated Description", TaskState.DOING, TaskPriority.HIGH_PRIORITY,
-                startDate, endDate, false, "Frontend");
+                startDate, endDate, false, "Frontend", "sad");
         CategoryEntity categoryEntity = new CategoryEntity();
         categoryEntity.setId(1);
         categoryEntity.setCategoryName("Frontend");
