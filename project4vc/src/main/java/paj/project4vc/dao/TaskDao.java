@@ -31,9 +31,9 @@ public class TaskDao extends AbstractDao<TaskEntity> {
         }
     }
 
-    public TaskEntity findTaskByIdAndUser(int id, String user) {
+    public TaskEntity findTaskByIdAndUser(int taskId, int userId) {
         try {
-            return (TaskEntity) em.createNamedQuery("Task.findTaskByIdAndUser").setParameter("id", id).setParameter("creator", user)
+            return (TaskEntity) em.createNamedQuery("Task.findTaskByIdAndUser").setParameter("id", taskId).setParameter("creator", userId)
                     .getSingleResult();
 
         } catch (NoResultException e) {

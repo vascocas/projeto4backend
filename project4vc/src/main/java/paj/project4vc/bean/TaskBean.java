@@ -211,7 +211,7 @@ public class TaskBean implements Serializable {
             UserRole userRole = user.getRole();
             // Check if the user is a DEVELOPER
             if (userRole == UserRole.DEVELOPER) {
-                t = taskDao.findTaskByIdAndUser(taskDto.getId(), user.getUsername());
+                t = taskDao.findTaskByIdAndUser(taskDto.getId(), user.getId());
             } else {
                 t = taskDao.findTaskById(taskDto.getId());
             }
@@ -226,7 +226,7 @@ public class TaskBean implements Serializable {
                 return convertTaskFromEntityToDto(t);
             }
         }
-        return null;
+        return new TaskDto();
     }
 
     public boolean updateTaskStatus(TaskStateDto newStatus) {

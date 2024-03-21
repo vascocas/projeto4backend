@@ -47,18 +47,14 @@ public class TaskService {
 
     // Return Task by Id
     @GET
-    @Path("/task")
+    @Path("/{taskId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllUsersTasks(@HeaderParam("token") String token, @QueryParam("taskId") int taskId) {
+    public Response getAllUsersTasks(@HeaderParam("token") String token, @PathParam("taskId") int taskId) {
         if (!userBean.tokenExist(token)) {
             return Response.status(401).entity("Invalid token").build();
         }
         TaskDto task = taskBean.getTask(taskId);
-        if (task != null) {
-            return Response.status(200).entity(task).build();
-        } else {
-            return Response.status(404).entity("Task with this id not found").build();
-        }
+        return Response.status(200).entity(task).build();
     }
 
     // Return all Tasks from user
@@ -70,7 +66,7 @@ public class TaskService {
             return Response.status(401).entity("Invalid token").build();
         }
         ArrayList<TaskDto> tasks = taskBean.getUserTasks(token, userId);
-        if (tasks != null) {
+        if (tasks.isEmpty()) {
             return Response.status(200).entity(tasks).build();
         } else {
             return Response.status(404).entity("No tasks found for this user").build();
@@ -86,7 +82,7 @@ public class TaskService {
             return Response.status(401).entity("Invalid token").build();
         }
         ArrayList<TaskDto> tasks = taskBean.getCategoryTasks(token, categoryId);
-        if (tasks != null) {
+        if (!tasks.isEmpty()) {
             return Response.status(200).entity(tasks).build();
         } else {
             return Response.status(404).entity("No category tasks found").build();
@@ -210,12 +206,9 @@ public class TaskService {
             return Response.status(400).entity("Category does not exist").build();
         }
         TaskDto returnTask = taskBean.updateTask(token, task, category);
-        if (returnTask != null) {
-            return Response.status(200).entity(returnTask).build();
-        } else {
-            return Response.status(404).entity("Impossible to edit task. Verify all fields").build();
-        }
+        return Response.status(200).entity(returnTask).build();
     }
+
 
     // Update Task Status (Move task between columns)
     @PUT
