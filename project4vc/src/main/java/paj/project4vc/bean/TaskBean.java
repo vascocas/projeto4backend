@@ -157,7 +157,7 @@ public class TaskBean implements Serializable {
                 UserEntity userTask = userDao.findUserById(userId);
                 if (userTask != null) {
                     ArrayList<TaskEntity> tasks = taskDao.findTasksByUser(userTask);
-                    if (tasks != null && !tasks.isEmpty()) {
+                    if (tasks != null) {
                         return convertTasksFromEntityListToDtoList(tasks);
                     }
                 }
@@ -174,7 +174,7 @@ public class TaskBean implements Serializable {
             // Check if the user is a SCRUM_MASTER or PRODUCT_OWNER
             if (userRole == UserRole.SCRUM_MASTER || userRole == UserRole.PRODUCT_OWNER) {
                 ArrayList<TaskEntity> tasks = taskDao.findTasksByDeleted();
-                if (tasks != null && !tasks.isEmpty()) {
+                if (tasks != null) {
                     ArrayList<TaskDto> taskDtos = convertTasksFromEntityListToDtoList(tasks);
                     return taskDtos;
                 }
@@ -193,7 +193,7 @@ public class TaskBean implements Serializable {
                 CategoryEntity ctgEntity = categoryDao.findCategoryById(categoryId);
                 if (ctgEntity != null) {
                     ArrayList<TaskEntity> tasks = taskDao.findTasksByCategoryId(ctgEntity.getId());
-                    if (tasks != null && !tasks.isEmpty()) {
+                    if (tasks != null) {
                         ArrayList<TaskDto> taskDtos = convertTasksFromEntityListToDtoList(tasks);
                         return taskDtos;
                     }
