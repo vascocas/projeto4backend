@@ -60,7 +60,7 @@ public class UserService {
         if (userBean.register(user)) {
             return Response.status(200).entity("The new user is registered").build();
         }
-        return Response.status(401).entity("There is a user with the same username").build();
+        return Response.status(401).entity("There is a user with the same credentials").build();
     }
 
     // Makes Logout
@@ -197,7 +197,7 @@ public class UserService {
             if (userBean.editProfile(user, token)) {
                 return Response.status(200).entity("Profile updated!").build();
             } else {
-                return Response.status(401).entity("Fail updating profile").build();
+                return Response.status(403).entity("Unauthorized").build();
             }
         } else {
             userBean.logout(token);
@@ -226,7 +226,7 @@ public class UserService {
             if (userBean.editUsersProfile(user, token)) {
                 return Response.status(200).entity("Profile updated!").build();
             } else {
-                return Response.status(401).entity("Fail updating profile").build();
+                return Response.status(403).entity("Unauthorized").build();
             }
         } else {
             userBean.logout(token);
@@ -249,7 +249,7 @@ public class UserService {
             if (userBean.editUserPassword(token, newPassword)) {
                 return Response.status(200).entity("Password updated!").build();
             } else {
-                return Response.status(401).entity("Fail updating password").build();
+                return Response.status(403).entity("Unauthorized").build();
             }
         } else {
             userBean.logout(token);
@@ -272,7 +272,7 @@ public class UserService {
             if (userBean.editUsersPassword(token, newPassword)) {
                 return Response.status(200).entity("Password updated!").build();
             } else {
-                return Response.status(401).entity("Fail updating password").build();
+                return Response.status(403).entity("Unauthorized").build();
             }
         } else {
             userBean.logout(token);

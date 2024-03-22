@@ -167,7 +167,7 @@ public class TaskService {
         if (newTask != null) {
             return Response.status(200).entity(newTask).build();
         } else {
-            return Response.status(404).entity("Impossible to create task. Verify all fields").build();
+            return Response.status(403).entity("Unauthorized").build();
         }
     }
 
@@ -229,7 +229,7 @@ public class TaskService {
         if (taskBean.updateTaskStatus(newStatus)) {
             return Response.status(200).entity("Task status updated successfully").build();
         } else {
-            return Response.status(404).entity("Impossible to update task status. Task not found or invalid status").build();
+            return Response.status(404).entity("Task not found").build();
         }
     }
 
@@ -244,7 +244,7 @@ public class TaskService {
         if (taskBean.removeTask(token, taskId)) {
             return Response.status(200).entity("Task delete successfully").build();
         } else {
-            return Response.status(404).entity("Impossible to delete task.").build();
+            return Response.status(403).entity("Unauthorized").build();
         }
     }
 
@@ -259,7 +259,7 @@ public class TaskService {
         if (taskBean.restoreDeletedTask(token, taskId)) {
             return Response.status(200).entity("Task restored successfully").build();
         } else {
-            return Response.status(404).entity("Impossible to restored task.").build();
+            return Response.status(403).entity("Unauthorized").build();
         }
     }
 
@@ -274,7 +274,7 @@ public class TaskService {
         if (taskBean.removeTaskPermanently(token, taskId)) {
             return Response.status(200).entity("Task deleted permanently").build();
         }
-        return Response.status(404).entity("Impossible to delete task.").build();
+        return Response.status(403).entity("Unauthorized").build();
     }
 
     // Remove all Tasks from user (Recycle bin)
@@ -289,7 +289,7 @@ public class TaskService {
         if (taskBean.removeAllUserTasks(token, userId)) {
             return Response.status(200).entity("Tasks deleted successfully").build();
         } else {
-            return Response.status(403).entity("Unauthorized.").build();
+            return Response.status(403).entity("Unauthorized").build();
         }
     }
 
