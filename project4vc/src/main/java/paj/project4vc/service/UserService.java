@@ -26,11 +26,14 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@HeaderParam("username") String username, @HeaderParam("password") String password) {
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            return Response.status(400).entity("Username and Password cannot be empty").build();
+        }
         LoginDto login = userBean.login(username, password);
         if (login != null) {
             return Response.status(200).entity(login).build();
         }
-        return Response.status(403).entity("Wrong Username or Password!").build();
+        else return Response.status(403).entity("Wrong Username or Password! Please try again.").build();
     }
 
     // Register new user
@@ -58,9 +61,10 @@ public class UserService {
         }
         // Proceed with registering the user
         if (userBean.register(user)) {
-            return Response.status(200).entity("The new user is registered").build();
+            return Response.status(200).entity("Registration Successful!").build();
+        } else {
+            return Response.status(401).entity("Verify all fields. Username and Email must be unique").build();
         }
-        return Response.status(401).entity("There is a user with the same credentials").build();
     }
 
     // Makes Logout
@@ -159,10 +163,10 @@ public class UserService {
 
     // Get user by username
     @GET
-    @Path("/{username}")
+    @Path("/username")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProfile(@HeaderParam("token") String token, @PathParam("username") String username) {
+    public Response getProfile(@HeaderParam("token") String token, @QueryParam("username") String username) {
         if (userBean.tokenExist(token)) {
             UserDto user = userBean.getProfile(username, token);
             if (user != null) {

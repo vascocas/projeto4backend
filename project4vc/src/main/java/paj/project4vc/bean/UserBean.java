@@ -36,22 +36,25 @@ public class UserBean implements Serializable {
     int tokenTimer = 1000000;
 
     public LoginDto login(String username, String password) {
-        LoginDto returnedLogin = new LoginDto();
+        LoginDto successLogin = new LoginDto();
         UserEntity userEntity = userDao.findUserByUsername(username);
-        // Retrieve the hashed password associated with the user
-        String hashedPassword = userEntity.getPassword();
-        if (userEntity != null && !userEntity.isDeleted() && passEncoder.matches(password, hashedPassword)) {
-            String tokenValue = generateNewToken();
-            TokenEntity tokenEntity = new TokenEntity();
-            tokenEntity.setTokenValue(tokenValue);
-            tokenEntity.setUser(userEntity);
-            tokenEntity.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
-            tokenDao.persist(tokenEntity);
-            returnedLogin.setToken(tokenValue);
-            returnedLogin.setRole(userEntity.getRole());
-            returnedLogin.setPhoto(userEntity.getPhoto());
-            returnedLogin.setUsername(username);
-            return returnedLogin;
+        if (userEntity != null && !userEntity.isDeleted()) {
+            // Retrieve the hashed password associated with the user
+            String hashedPassword = userEntity.getPassword();
+            // Check if the provided password matches the hashed password
+            if (passEncoder.matches(password, hashedPassword)) {
+                String tokenValue = generateNewToken();
+                TokenEntity tokenEntity = new TokenEntity();
+                tokenEntity.setTokenValue(tokenValue);
+                tokenEntity.setUser(userEntity);
+                tokenEntity.setTokenExpiration(Instant.now().plus(tokenTimer, ChronoUnit.SECONDS));
+                tokenDao.persist(tokenEntity);
+                successLogin.setToken(tokenValue);
+                successLogin.setRole(userEntity.getRole());
+                successLogin.setPhoto(userEntity.getPhoto());
+                successLogin.setUsername(username);
+                return successLogin;
+            }
         }
         return null;
     }
@@ -76,13 +79,13 @@ public class UserBean implements Serializable {
         // Check if a user with the provided username and email already exists
         UserEntity userByUsername = userDao.findUserByUsername(user.getUsername());
         UserEntity userByEmail = userDao.findUserByEmail(user.getEmail());
-        if ((userByUsername != null) && (userByEmail != null)) {
-            return false;
+        if ((userByUsername == null) && (userByEmail == null)) {
+            UserEntity newUser = convertUserDtotoEntity(user);
+            newUser.setRole(UserRole.DEVELOPER);
+            userDao.persist(newUser);
+            return true;
         }
-        UserEntity newUser = convertUserDtotoEntity(user);
-        newUser.setRole(UserRole.DEVELOPER);
-        userDao.persist(newUser);
-        return true;
+        return false;
     }
 
     public boolean logout(String token) {
