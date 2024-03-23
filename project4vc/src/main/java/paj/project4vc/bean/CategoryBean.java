@@ -86,7 +86,6 @@ public class CategoryBean implements Serializable {
     }
 
     public boolean updateCategoryName(String token, CategoryDto ctg) {
-
         // Get user role by token
         UserEntity user = userDao.findUserByToken(token);
         UserRole userRole = user.getRole();
@@ -95,7 +94,7 @@ public class CategoryBean implements Serializable {
             CategoryEntity c = categoryDao.findCategoryById(ctg.getId());
             if (c != null) {
                 CategoryEntity c1 = categoryDao.findCategoryByName(ctg.getName());
-                if (c1 == null) {
+                if (c1 == null || c1.getId() == c.getId()) {
                     c.setCategoryName(ctg.getName());
                     return true;
                 }

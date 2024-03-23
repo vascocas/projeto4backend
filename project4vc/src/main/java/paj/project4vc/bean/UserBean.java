@@ -214,9 +214,9 @@ public class UserBean implements Serializable {
         if (userEntity != null) {
             UserRole userRole = userEntity.getRole();
             // Check if the user is not a DEVELOPER or SCRUM_MASTER: cannot change user role
-            // if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
-            //  return false;
-            //}
+            if (userRole == UserRole.DEVELOPER || userRole == UserRole.SCRUM_MASTER) {
+            return false;
+            }
             UserEntity u = userDao.findUserById(user.getId());
             if (u != null) {
                 u.setRole(user.getRole());
